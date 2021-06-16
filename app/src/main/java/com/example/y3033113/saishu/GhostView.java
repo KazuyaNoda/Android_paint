@@ -63,6 +63,14 @@ public class GhostView extends View {
                     paint.setStyle(Paint.Style.STROKE);
                     canvas.drawOval(rect, paint);
                     break;
+                case com.example.y3033113.saishu.MyView.mode_clip:
+                    points = com.example.y3033113.saishu.MyView.points;
+                    for(int i=0; i+3<points.size(); i += 2){
+                        canvas.drawLine(points.get(i), points.get(i+1), points.get(i+2), points.get(i+3), paint);
+                    }
+                    paint.setStyle(Paint.Style.STROKE);
+                    canvas.drawPath(MyView.path, paint);
+                    break;
             }
         }
 
