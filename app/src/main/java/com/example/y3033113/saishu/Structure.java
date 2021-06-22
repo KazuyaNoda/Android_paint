@@ -12,12 +12,14 @@ public class Structure {
     int mode = 0;
     float thick = 0;
     Path path = null;
+    boolean cliping = false;
 
-    Structure(List<Float> points, int color, int mode, float thick, Path path) {
+    Structure(List<Float> points, int color, int mode, float thick, Path path, boolean cliping) {
         this.points = points;
         this.color = color;
         this.mode = mode;
         this.thick = thick;
         this.path = path;
+        this.cliping = cliping;
     }
 }

@@ -42,8 +42,11 @@ public class MyView extends View {
     final static int mode_clip = 5;
     final static int mode_Eraser = 6;
 
-    static int mode = mode_clip;            // 描画モードを格納する変数
+    static int mode = mode_Line;            // 描画モードを格納する変数
     static Path path = new Path();
+
+    static boolean moving = false;
+    static boolean cliping = false;
 
     static List<Structure> drawlist = new ArrayList<>(64);
     static Structure newdraw;
@@ -90,7 +93,7 @@ public class MyView extends View {
         switch(event.getAction()) {
             case MotionEvent.ACTION_DOWN:           // 触ったとき
                 if(mode == mode_clip){
-                    path.reset();
+                    path = new Path();
                 }
                 prex = event.getX();                // 座標を図形の始点に設定
                 prey = event.getY();
@@ -102,18 +105,22 @@ public class MyView extends View {
                 y = event.getY();
                 points.add(x);
                 points.add(y);
+                moving = false;
 
                 if(mode == mode_clip){
                     path = createPath(points);
+                    cliping = true;
+                    points = new ArrayList<>();
                 }
                 else{
-                    newdraw = new Structure(points, color, mode, 5, path);
+                    newdraw = new Structure(points, color, mode, 5, path, cliping);
                     drawlist.add(newdraw);
 
                     points = new ArrayList<>();
-                    path.reset();
 
-                    GhostView.drawghostkey = false;     // プレビュー図形の表示を終了
+                    if(cliping){
+                        GhostView.drawghostkey = false;     // プレビュー図形の表示を終了
+                    }
                     invalidate();                       // 再描画
                 }
 
@@ -121,13 +128,12 @@ public class MyView extends View {
 
                 break;
             case MotionEvent.ACTION_MOVE:           // スライドするとき
+                moving = true;
                 if(mode == mode_Line || mode == mode_clip){              // 描画モードが線のとき
                     x = event.getX();               // 座標を終点に設定
                     y = event.getY();
                     points.add(x);
                     points.add(y);
-
-                    invalidate();                   // 再描画
                 }
                 ghost_x = event.getX();         // 座標をプレビュー図形の終点に設定
                 ghost_y = event.getY();
@@ -145,10 +151,14 @@ public class MyView extends View {
 
         for(int i=0; i<drawlist.size(); i++){
             drawnow = drawlist.get(i);
+            canvas_bm.save();
 
             drawpoints = drawnow.points;
             paint.setColor(drawnow.color);
             paint.setStrokeWidth(drawnow.thick);
+            if(drawnow.cliping){
+                canvas_bm.clipPath(drawnow.path);
+            }
 
             switch(drawnow.mode){       // 描画モードで処理を分ける
                 case mode_Line:     // 線を描く
@@ -176,7 +186,9 @@ public class MyView extends View {
                     break;
                 case mode_Eraser:
                     break;
-
+            }
+            if(drawnow.cliping){
+                canvas_bm.restore();
             }
         }
     }
@@ -196,9 +208,22 @@ public class MyView extends View {
 
     // 画面のイメージを消すメソッド
     static void AllClear(){
-        paint_ac.setColor(Color.WHITE);                                                              // 色を白に設定
-        canvas_bm.drawRect(0, 0, canvas_bm.getWidth(), canvas_bm.getHeight(), paint_ac);    // 画面を塗りつぶす
+        float width = canvas_bm.getWidth();
+        float height = canvas_bm.getHeight();
+        if(canvas_bm.getSaveCount() > 1){
+            canvas_bm.restore();
+        }
+        paint_ac.setColor(Color.WHITE);                                 // 色を白に設定
+        canvas_bm.drawRect(0, 0, width, height, paint_ac);    // 画面を塗りつぶす
+        GhostView.drawghostkey = false;
         drawlist.clear();
+        path.reset();
+        cliping = false;
+    }
+
+    static void clipReset(){
+        path = new Path();
+        cliping = false;
     }
 
     static void Undo(){

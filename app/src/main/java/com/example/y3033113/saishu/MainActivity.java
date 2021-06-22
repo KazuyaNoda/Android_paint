@@ -24,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     Button button_Oval;         // 塗りつぶしなし楕円を描くモードに変更させるボタン
     Button button_redo;
     Button button_undo;
+    Button button_clip;
+    Button button_clipreset;
 
     TextView text_R;            // RGBのうちRの値を表示するTextView
     TextView text_G;            // RGBのうちGの値を表示するTextView
@@ -167,6 +169,8 @@ public class MainActivity extends AppCompatActivity {
         button_Oval = (Button)findViewById(R.id.button6);
         button_redo = (Button)findViewById(R.id.button7);
         button_undo = (Button)findViewById(R.id.button8);
+        button_clip = (Button)findViewById(R.id.button9);
+        button_clipreset = (Button)findViewById(R.id.button10);
 
         // Buttonのリスナ登録, イベント処理
         button_ac.setOnClickListener(new View.OnClickListener(){
@@ -230,6 +234,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 MyView.Undo();
+            }
+        });
+
+        button_clip.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                MyView.mode = MyView.mode_clip;
+            }
+        });
+
+        button_clipreset.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                MyView.clipReset();
             }
         });
     }
