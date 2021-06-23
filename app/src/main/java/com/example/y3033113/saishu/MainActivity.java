@@ -2,12 +2,15 @@ package com.example.y3033113.saishu;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import static com.example.y3033113.saishu.R.id.textView;
@@ -26,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     Button button_undo;
     Button button_clip;
     Button button_clipreset;
+    Button button_layer;
 
     TextView text_R;            // RGBのうちRの値を表示するTextView
     TextView text_G;            // RGBのうちGの値を表示するTextView
@@ -42,10 +46,12 @@ public class MainActivity extends AppCompatActivity {
     static int value_B = 0;         // RGBのうちBの値を格納する変数
     static int value_alpha = 255;   // 不透明度の値を格納する変数
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);                 // activity_main.xmlを表示
+        MyView.layers.add(new ArrayList<Structure>(64));
 
         // TextViewの設定
         text_R = (TextView)findViewById(R.id.textView);
@@ -91,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
                     // ツマミが離されたとき
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
+                        MyView.color = Color.argb(value_alpha, value_R, value_G, value_B);
                     }
                 });
 
@@ -113,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
                     // ツマミが離されたとき
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
+                        MyView.color = Color.argb(value_alpha, value_R, value_G, value_B);
                     }
                 });
 
@@ -135,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
                     // ツマミが離されたとき
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
+                        MyView.color = Color.argb(value_alpha, value_R, value_G, value_B);
                     }
                 });
 
@@ -157,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
                     // ツマミが離されたとき
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
+                        MyView.color = Color.argb(value_alpha, value_R, value_G, value_B);
                     }
                 });
 
@@ -171,6 +181,7 @@ public class MainActivity extends AppCompatActivity {
         button_undo = (Button)findViewById(R.id.button8);
         button_clip = (Button)findViewById(R.id.button9);
         button_clipreset = (Button)findViewById(R.id.button10);
+        button_layer = (Button)findViewById(R.id.button11);
 
         // Buttonのリスナ登録, イベント処理
         button_ac.setOnClickListener(new View.OnClickListener(){
@@ -246,6 +257,15 @@ public class MainActivity extends AppCompatActivity {
         button_clipreset.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 MyView.clipReset();
+            }
+        });
+
+        button_layer.setOnClickListener(new View.OnClickListener(){
+            // 押されたとき
+            @Override
+            public void onClick(View v) {
+                MyView.layers.add(new ArrayList<>(10));
+                Toast.makeText(MainActivity.this, "add new layer", Toast.LENGTH_SHORT).show();
             }
         });
     }

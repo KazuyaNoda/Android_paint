@@ -15,7 +15,7 @@ import java.util.List;
 public class GhostView extends View {
     static boolean drawghostkey = false;        // プレビュー図形の表示を開始/終了するためのboolean型変数
     List<Float> points = new ArrayList<>();
-    Paint paint = new Paint();
+    static Paint paint = new Paint();
 
     public GhostView(Context context) {
         super(context);
@@ -29,15 +29,13 @@ public class GhostView extends View {
         super.onDraw(canvas);
         RectF rect;                         // 楕円を描くときに用いる
         paint.setStrokeWidth(5);            // 線の太さを５に設定(将来的に変更できるようにする)
+        paint.setColor(MyView.color);
 
         if(!MyView.path.isEmpty()){
             paint.setColor(Color.GREEN);
             paint.setStyle(Paint.Style.STROKE);
             canvas.drawPath(MyView.path, paint);
         }
-
-        // 入力されたARGBの値から色を定義
-        paint.setColor(Color.argb(com.example.y3033113.saishu.MainActivity.value_alpha, com.example.y3033113.saishu.MainActivity.value_R, com.example.y3033113.saishu.MainActivity.value_G, com.example.y3033113.saishu.MainActivity.value_B));
 
         if(drawghostkey) {                  // プレビュー図形を描画できるとき
             float prex = 0;

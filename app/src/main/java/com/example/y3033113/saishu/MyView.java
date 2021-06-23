@@ -27,7 +27,7 @@ public class MyView extends View {
     static float ghost_y;                   // プレビュー図形のbottomにあたる
     static Bitmap bitmap;                   // 今のキャンバスのイメージを格納する
     static Paint paint;                            // キャンバスに描くためのPaint
-    int color;
+    static int color = Color.BLACK;
     int height;
     int width;
     static Paint paint_ac = new Paint();    // allclearをするためのPaint
@@ -48,11 +48,16 @@ public class MyView extends View {
     static boolean moving = false;
     static boolean cliping = false;
 
-    static List<Structure> drawlist = new ArrayList<>(64);
-    static Structure newdraw;
     static List<Float> points = new ArrayList<>();
 
+    static Structure newdraw;
+    static List<Structure> drawlist = new ArrayList<>(64);
     static List<Structure> keptlist = new ArrayList<>(10);
+    static List<List<Structure>> layers = new ArrayList<>(10);
+
+    static int currentLayer = 0;
+
+
 
     public MyView(Context context){
         super(context);
@@ -76,8 +81,6 @@ public class MyView extends View {
         }
         paint.setColor(Color.WHITE);
         canvas_bm.drawRect(0, 0, width, height, paint);
-        // 入力されたARGBの値で色を定義
-        color = Color.argb(com.example.y3033113.saishu.MainActivity.value_alpha, com.example.y3033113.saishu.MainActivity.value_R, com.example.y3033113.saishu.MainActivity.value_G, com.example.y3033113.saishu.MainActivity.value_B);
 
         myDraw();
 
@@ -114,7 +117,7 @@ public class MyView extends View {
                 }
                 else{
                     newdraw = new Structure(points, color, mode, 5, path, cliping);
-                    drawlist.add(newdraw);
+                    layers.get(currentLayer).add(newdraw);
 
                     points = new ArrayList<>();
 
@@ -149,46 +152,48 @@ public class MyView extends View {
         Structure drawnow;
         List<Float> drawpoints;
 
-        for(int i=0; i<drawlist.size(); i++){
-            drawnow = drawlist.get(i);
-            canvas_bm.save();
+        for(int i=0; i<layers.size(); i++){
+            for(int j=0; j<layers.get(i).size(); j++){
+                drawnow = layers.get(i).get(j);
+                canvas_bm.save();
 
-            drawpoints = drawnow.points;
-            paint.setColor(drawnow.color);
-            paint.setStrokeWidth(drawnow.thick);
-            if(drawnow.cliping){
-                canvas_bm.clipPath(drawnow.path);
-            }
+                drawpoints = drawnow.points;
+                paint.setColor(drawnow.color);
+                paint.setStrokeWidth(drawnow.thick);
+                if(drawnow.cliping){
+                    canvas_bm.clipPath(drawnow.path);
+                }
 
-            switch(drawnow.mode){       // 描画モードで処理を分ける
-                case mode_Line:     // 線を描く
-                    for(int j=0; j+3<drawpoints.size(); j += 2){
-                        canvas_bm.drawLine(drawpoints.get(j), drawpoints.get(j+1), drawpoints.get(j+2), drawpoints.get(j+3), paint);
-                    }
-                    break;
-                case mode_fillRect: // 塗りつぶしあり四角形を描く
-                    paint.setStyle(Paint.Style.FILL);
-                    canvas_bm.drawRect(drawpoints.get(0), drawpoints.get(1), drawpoints.get(2), drawpoints.get(3), paint);
-                    break;
-                case mode_Rect:     // 塗りつぶしなし四角形を描く
-                    paint.setStyle(Paint.Style.STROKE);
-                    canvas_bm.drawRect(drawpoints.get(0), drawpoints.get(1), drawpoints.get(2), drawpoints.get(3), paint);
-                    break;
-                case mode_fillOval: // 塗りつぶしあり楕円を描く
-                    paint.setStyle(Paint.Style.FILL);
-                    rect = new RectF(drawpoints.get(0), drawpoints.get(1), drawpoints.get(2), drawpoints.get(3));
-                    canvas_bm.drawOval(rect, paint);
-                    break;
-                case mode_Oval:     // 塗りつぶしなし楕円を描く
-                    paint.setStyle(Paint.Style.STROKE);
-                    rect = new RectF(drawpoints.get(0), drawpoints.get(1), drawpoints.get(2), drawpoints.get(3));
-                    canvas_bm.drawOval(rect, paint);
-                    break;
-                case mode_Eraser:
-                    break;
-            }
-            if(drawnow.cliping){
-                canvas_bm.restore();
+                switch(drawnow.mode){       // 描画モードで処理を分ける
+                    case mode_Line:     // 線を描く
+                        for(int k=0; k+3<drawpoints.size(); k += 2){
+                            canvas_bm.drawLine(drawpoints.get(k), drawpoints.get(k+1), drawpoints.get(k+2), drawpoints.get(k+3), paint);
+                        }
+                        break;
+                    case mode_fillRect: // 塗りつぶしあり四角形を描く
+                        paint.setStyle(Paint.Style.FILL);
+                        canvas_bm.drawRect(drawpoints.get(0), drawpoints.get(1), drawpoints.get(2), drawpoints.get(3), paint);
+                        break;
+                    case mode_Rect:     // 塗りつぶしなし四角形を描く
+                        paint.setStyle(Paint.Style.STROKE);
+                        canvas_bm.drawRect(drawpoints.get(0), drawpoints.get(1), drawpoints.get(2), drawpoints.get(3), paint);
+                        break;
+                    case mode_fillOval: // 塗りつぶしあり楕円を描く
+                        paint.setStyle(Paint.Style.FILL);
+                        rect = new RectF(drawpoints.get(0), drawpoints.get(1), drawpoints.get(2), drawpoints.get(3));
+                        canvas_bm.drawOval(rect, paint);
+                        break;
+                    case mode_Oval:     // 塗りつぶしなし楕円を描く
+                        paint.setStyle(Paint.Style.STROKE);
+                        rect = new RectF(drawpoints.get(0), drawpoints.get(1), drawpoints.get(2), drawpoints.get(3));
+                        canvas_bm.drawOval(rect, paint);
+                        break;
+                    case mode_Eraser:
+                        break;
+                }
+                if(drawnow.cliping){
+                    canvas_bm.restore();
+                }
             }
         }
     }
@@ -216,7 +221,7 @@ public class MyView extends View {
         paint_ac.setColor(Color.WHITE);                                 // 色を白に設定
         canvas_bm.drawRect(0, 0, width, height, paint_ac);    // 画面を塗りつぶす
         GhostView.drawghostkey = false;
-        drawlist.clear();
+        layers.get(currentLayer).clear();
         path.reset();
         cliping = false;
     }
@@ -227,11 +232,13 @@ public class MyView extends View {
     }
 
     static void Undo(){
+        drawlist = layers.get(currentLayer);
         int index = drawlist.size() - 1;
         if(index >= 0){
             Structure tmp = drawlist.get(index);
             keptlist.add(tmp);
             drawlist.remove(index);
+            layers.set(currentLayer, drawlist);
         }
         paint_ac.setColor(Color.WHITE);                                                              // 色を白に設定
         canvas_bm.drawRect(0, 0, canvas_bm.getWidth(), canvas_bm.getHeight(), paint_ac);    // 画面を塗りつぶす
@@ -242,7 +249,7 @@ public class MyView extends View {
         int index = keptlist.size() - 1;
         if(index >= 0){
             Structure tmp = keptlist.get(index);
-            drawlist.add(tmp);
+            layers.get(currentLayer).add(tmp);
             keptlist.remove(index);
         }
         paint_ac.setColor(Color.WHITE);                                                              // 色を白に設定
