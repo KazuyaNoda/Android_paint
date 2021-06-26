@@ -34,15 +34,15 @@ public class MyView extends View {
     static Canvas canvas_bm;                // bitmapを編集するためのCanvas
 
     // 描画モードの定数定義
-    final static int mode_Line = 0;         // 線
-    final static int mode_fillRect = 1;     // 塗りつぶしあり四角形
-    final static int mode_Rect = 2;         // 塗りつぶしなし四角形
-    final static int mode_fillOval = 3;     // 塗りつぶしあり楕円
-    final static int mode_Oval = 4;         // 塗りつぶしなし楕円
-    final static int mode_clip = 5;
-    final static int mode_Eraser = 6;
+    final static byte mode_Line = 0;         // 線
+    final static byte mode_fillRect = 1;     // 塗りつぶしあり四角形
+    final static byte mode_Rect = 2;         // 塗りつぶしなし四角形
+    final static byte mode_fillOval = 3;     // 塗りつぶしあり楕円
+    final static byte mode_Oval = 4;         // 塗りつぶしなし楕円
+    final static byte mode_clip = 5;
+    final static byte mode_Eraser = 6;
 
-    static int mode = mode_Line;            // 描画モードを格納する変数
+    static byte mode = mode_Line;            // 描画モードを格納する変数
     static Path path = new Path();
 
     static boolean moving = false;
