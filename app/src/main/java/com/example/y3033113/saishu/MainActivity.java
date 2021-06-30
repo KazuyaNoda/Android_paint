@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -13,6 +14,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Locale;
+
+import static java.lang.String.format;
 
 
 // レイアウトなどを記述したメインクラス
@@ -46,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
     Button button_color;
     Button button_tool;
     Button button_layer;
+    Button button_add_layer;
+    Button button_change_layer;
     Button button_close;
     Button button_output;
     Button button_red;
@@ -61,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     TextView text_G;            // RGBのうちGの値を表示するTextView
     TextView text_B;            // RGBのうちBの値を表示するTextView
     TextView text_alpha;        // 不透明度を表示するTextView
+    EditText et_number;
 
     static SeekBar seekBar_R;       // RGBのうちRの値を入力するSeekBar
     static SeekBar seekBar_G;       // RGBのうちGの値を入力するSeekBar
@@ -71,6 +77,9 @@ public class MainActivity extends AppCompatActivity {
     static int value_G = 0;         // RGBのうちGの値を格納する変数
     static int value_B = 0;         // RGBのうちBの値を格納する変数
     static int value_alpha = 255;   // 不透明度の値を格納する変数
+
+    String s_number;
+    int indent;
 
 
     @Override
@@ -91,6 +100,9 @@ public class MainActivity extends AppCompatActivity {
         text_G = (TextView)findViewById(R.id.textView_G);
         text_B = (TextView)findViewById(R.id.textView_B);
         text_alpha = (TextView)findViewById(R.id.textView_alpha);
+
+        et_number = (EditText)findViewById(R.id.editTextNumber);
+        et_number.setText("1");
 
         // seekBarの設定
         seekBar_R = (SeekBar)findViewById(R.id.seekBar_R);
@@ -118,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         value_R = progress;                                                 // 各valueに各seekBarの値を格納
-                        String str = String.format("R: %d", progress);                       // TextViewに表示する文字列を編集
+                        String str = format("R: %d", progress);                       // TextViewに表示する文字列を編集
                         text_R.setText(str);                                               // Textviewに表示
                     }
 
@@ -141,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         value_G = progress;
-                        String str = String.format("G: %d", progress);
+                        String str = format("G: %d", progress);
                         text_G.setText(str);
                     }
 
@@ -164,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         value_B = progress;
-                        String str = String.format("B: %d", progress);
+                        String str = format("B: %d", progress);
                         text_B.setText(str);
                     }
 
@@ -187,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         value_alpha = progress;
-                        String str = String.format("alpha: %d", progress);
+                        String str = format("alpha: %d", progress);
                         text_alpha.setText(str);
                     }
 
@@ -218,6 +230,8 @@ public class MainActivity extends AppCompatActivity {
         button_color = (Button)findViewById(R.id.button_color);
         button_tool = (Button)findViewById(R.id.button_tool);
         button_layer = (Button)findViewById(R.id.button_layer);
+        button_add_layer = (Button)findViewById(R.id.button_add_layer);
+        button_change_layer = (Button)findViewById(R.id.button_change_layer);
         button_output = (Button)findViewById(R.id.button_output);
         button_close = (Button)findViewById(R.id.button_close);
         button_red = (Button)findViewById(R.id.button_red);
@@ -235,46 +249,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 MyView.AllClear();  // 画面を白に塗りつぶす(MyView.javaのメソッド)
-            }
-        });
-
-        button_Line.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
-            @Override
-            public void onClick(View v) {
-                MyView.mode = MyView.mode_Line;     // 線を引くモードにする
-            }
-        });
-
-        button_fillRect.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
-            @Override
-            public void onClick(View v) {
-                MyView.mode = MyView.mode_fillRect; // 塗りつぶしあり四角形を描くモードにする
-            }
-        });
-
-        button_Rect.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
-            @Override
-            public void onClick(View v) {
-                MyView.mode = MyView.mode_Rect;     // 塗りつぶしなし四角形を描くモードにする
-            }
-        });
-
-        button_fillOval.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
-            @Override
-            public void onClick(View v) {
-                MyView.mode = MyView.mode_fillOval; // 塗りつぶしあり楕円を描くモードにする
-            }
-        });
-
-        button_Oval.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
-            @Override
-            public void onClick(View v) {
-                MyView.mode = MyView.mode_Oval;     // 塗りつぶしなし楕円を描くモードにする
             }
         });
 
@@ -298,15 +272,76 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        button_Line.setOnClickListener(new View.OnClickListener(){
+            // 押されたとき
+            @Override
+            public void onClick(View v) {
+                MyView.mode = MyView.mode_Line;     // 線を引くモードにする
+                viewmode = mode_draw;
+                layout_mode.setVisibility(View.INVISIBLE);
+                button_close.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        button_fillRect.setOnClickListener(new View.OnClickListener(){
+            // 押されたとき
+            @Override
+            public void onClick(View v) {
+                MyView.mode = MyView.mode_fillRect; // 塗りつぶしあり四角形を描くモードにする
+                viewmode = mode_draw;
+                layout_mode.setVisibility(View.INVISIBLE);
+                button_close.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        button_Rect.setOnClickListener(new View.OnClickListener(){
+            // 押されたとき
+            @Override
+            public void onClick(View v) {
+                MyView.mode = MyView.mode_Rect;     // 塗りつぶしなし四角形を描くモードにする
+                viewmode = mode_draw;
+                layout_mode.setVisibility(View.INVISIBLE);
+                button_close.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        button_fillOval.setOnClickListener(new View.OnClickListener(){
+            // 押されたとき
+            @Override
+            public void onClick(View v) {
+                MyView.mode = MyView.mode_fillOval; // 塗りつぶしあり楕円を描くモードにする
+                viewmode = mode_draw;
+                layout_mode.setVisibility(View.INVISIBLE);
+                button_close.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        button_Oval.setOnClickListener(new View.OnClickListener(){
+            // 押されたとき
+            @Override
+            public void onClick(View v) {
+                MyView.mode = MyView.mode_Oval;     // 塗りつぶしなし楕円を描くモードにする
+                viewmode = mode_draw;
+                layout_mode.setVisibility(View.INVISIBLE);
+                button_close.setVisibility(View.INVISIBLE);
+            }
+        });
+
         button_clip.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 MyView.mode = MyView.mode_clip;
+                viewmode = mode_draw;
+                layout_mode.setVisibility(View.INVISIBLE);
+                button_close.setVisibility(View.INVISIBLE);
             }
         });
 
         button_clipreset.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 MyView.clipReset();
+                viewmode = mode_draw;
+                layout_mode.setVisibility(View.INVISIBLE);
+                button_close.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -350,8 +385,40 @@ public class MainActivity extends AppCompatActivity {
             // 押されたとき
             @Override
             public void onClick(View v) {
+                if(viewmode == 0){
+                    viewmode = mode_layer;
+                    layout_layer.setVisibility(View.VISIBLE);
+                    button_close.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        button_add_layer.setOnClickListener(new View.OnClickListener(){
+            // 押されたとき
+            @Override
+            public void onClick(View v) {
                 MyView.layers.add(new ArrayList<>(10));
                 Toast.makeText(MainActivity.this, "add new layer", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        button_change_layer.setOnClickListener(new View.OnClickListener(){
+            // 押されたとき
+            @Override
+            public void onClick(View v) {
+                s_number = et_number.getText().toString();
+                indent = Integer.valueOf(s_number) - 1;
+
+                if(MyView.layers.size() > indent){
+                    MyView.currentLayer = indent;
+
+                    viewmode = mode_draw;
+                    layout_layer.setVisibility(View.INVISIBLE);
+                    button_close.setVisibility(View.INVISIBLE);
+                }
+                else{
+                    et_number.setText(String.format("%d以下の数字を入力", MyView.layers.size()-1));
+                }
             }
         });
 
@@ -471,9 +538,9 @@ public class MainActivity extends AppCompatActivity {
         seekBar_R.setProgress(r);
         seekBar_G.setProgress(g);
         seekBar_B.setProgress(b);
-        String str_R = String.format("R: %d", r);
-        String str_G = String.format("R: %d", g);
-        String str_B = String.format("R: %d", b);
+        String str_R = format("R: %d", r);
+        String str_G = format("R: %d", g);
+        String str_B = format("R: %d", b);
         text_R.setText(str_R);
         text_G.setText(str_G);
         text_B.setText(str_B);
