@@ -60,7 +60,7 @@
     <LinearLayout
         android:id="@+id/mode"
         android:layout_width="78dp"
-        android:layout_height="369dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
@@ -112,6 +112,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="r" />
+
+        <Button
+            android:id="@+id/button_eraser"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="eraser" />
     </LinearLayout>
 
     <LinearLayout
@@ -349,6 +355,13 @@
             android:layout_height="wrap_content"
             android:text="new" />
 
+        <EditText
+            android:id="@+id/editTextNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number" />
+
         <Button
             android:id="@+id/button_change_layer"
             android:layout_width="match_parent"
@@ -356,11 +369,32 @@
             android:text="change" />
 
         <EditText
-            android:id="@+id/editTextNumber"
+            android:id="@+id/et_index_a"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="number" />
+
+        <EditText
+            android:id="@+id/et_index_b"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number" />
+
+        <Button
+            android:id="@+id/button_exchange_layer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="exchange"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/text_currentLayer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="currentLayer: 1/1"
+            android:textSize="24sp" />
     </LinearLayout>
 
     <LinearLayout

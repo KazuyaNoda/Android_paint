@@ -6,6 +6,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.media.Image;
 import android.util.AttributeSet;
@@ -14,7 +16,11 @@ import android.view.View;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+
+import static java.util.Collections.swap;
 
 // 描画を担当するクラス
 public class MyView extends View {
@@ -25,13 +31,11 @@ public class MyView extends View {
     static float y;                         // 図形を描くときのbottomにあたる
     static float ghost_x;                   // プレビュー図形のrightにあたる
     static float ghost_y;                   // プレビュー図形のbottomにあたる
-    static Bitmap bitmap;                   // 今のキャンバスのイメージを格納する
     static Paint paint;                            // キャンバスに描くためのPaint
     static int color = Color.BLACK;
-    int height;
-    int width;
+    static int height;
+    static int width;
     static Paint paint_ac = new Paint();    // allclearをするためのPaint
-    static Canvas canvas_bm;                // bitmapを編集するためのCanvas
 
     // 描画モードの定数定義
     final static byte mode_Line = 0;         // 線
@@ -52,7 +56,9 @@ public class MyView extends View {
 
     static Structure newdraw;
     static List<Structure> drawlist = new ArrayList<>(64);
-    static List<Structure> keptlist = new ArrayList<>(10);
+    static List<Structure> keptlist = new ArrayList<>(64);
+    static List<Bitmap> bitmap = new ArrayList<>(10);
+    static List<Canvas> canvas_bm = new ArrayList<>(10);
     static List<List<Structure>> layers = new ArrayList<>(10);
 
     static int currentLayer = 0;
@@ -74,18 +80,18 @@ public class MyView extends View {
         if(paint == null){      // paintが定義されていなかったら
             paint = new Paint();                    // paintを宣言
             paint.setStrokeWidth(5);                // 線の太さを5にする(将来的には変更できるようにする)
-            bitmap = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_8888);   // bitmapをcanvasにあわせてつくる
-            canvas_bm = new Canvas(bitmap);
-            height = canvas_bm.getHeight();
-            width = canvas_bm.getWidth();
+            height = canvas.getHeight();
+            width = canvas.getWidth();
+            bitmap.add(Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888));   // bitmapをcanvasにあわせてつくる
+            canvas_bm.add(new Canvas(bitmap.get(0)));
         }
-        paint.setColor(Color.WHITE);
-        canvas_bm.drawRect(0, 0, width, height, paint);
 
         myDraw();
 
 
-        canvas.drawBitmap(bitmap, 0, 0, null);  // canvasにbitmapのイメージを描く
+        for(int i=0; i<layers.size(); i++){
+            canvas.drawBitmap(bitmap.get(i), 0, 0, null);  // canvasにbitmapのイメージを描く
+        }
 
     }
 
@@ -155,44 +161,50 @@ public class MyView extends View {
         for(int i=0; i<layers.size(); i++){
             for(int j=0; j<layers.get(i).size(); j++){
                 drawnow = layers.get(i).get(j);
-                canvas_bm.save();
+                canvas_bm.get(i).save();
 
                 drawpoints = drawnow.points;
                 paint.setColor(drawnow.color);
+                if(drawnow.color == Color.TRANSPARENT){
+                    paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+                }
                 paint.setStrokeWidth(drawnow.thick);
                 if(drawnow.cliping){
-                    canvas_bm.clipPath(drawnow.path);
+                    canvas_bm.get(i).clipPath(drawnow.path);
                 }
 
                 switch(drawnow.mode){       // 描画モードで処理を分ける
                     case mode_Line:     // 線を描く
                         for(int k=0; k+3<drawpoints.size(); k += 2){
-                            canvas_bm.drawLine(drawpoints.get(k), drawpoints.get(k+1), drawpoints.get(k+2), drawpoints.get(k+3), paint);
+                            canvas_bm.get(i).drawLine(drawpoints.get(k), drawpoints.get(k+1), drawpoints.get(k+2), drawpoints.get(k+3), paint);
                         }
                         break;
                     case mode_fillRect: // 塗りつぶしあり四角形を描く
                         paint.setStyle(Paint.Style.FILL);
-                        canvas_bm.drawRect(drawpoints.get(0), drawpoints.get(1), drawpoints.get(2), drawpoints.get(3), paint);
+                        canvas_bm.get(i).drawRect(drawpoints.get(0), drawpoints.get(1), drawpoints.get(2), drawpoints.get(3), paint);
                         break;
                     case mode_Rect:     // 塗りつぶしなし四角形を描く
                         paint.setStyle(Paint.Style.STROKE);
-                        canvas_bm.drawRect(drawpoints.get(0), drawpoints.get(1), drawpoints.get(2), drawpoints.get(3), paint);
+                        canvas_bm.get(i).drawRect(drawpoints.get(0), drawpoints.get(1), drawpoints.get(2), drawpoints.get(3), paint);
                         break;
                     case mode_fillOval: // 塗りつぶしあり楕円を描く
                         paint.setStyle(Paint.Style.FILL);
                         rect = new RectF(drawpoints.get(0), drawpoints.get(1), drawpoints.get(2), drawpoints.get(3));
-                        canvas_bm.drawOval(rect, paint);
+                        canvas_bm.get(i).drawOval(rect, paint);
                         break;
                     case mode_Oval:     // 塗りつぶしなし楕円を描く
                         paint.setStyle(Paint.Style.STROKE);
                         rect = new RectF(drawpoints.get(0), drawpoints.get(1), drawpoints.get(2), drawpoints.get(3));
-                        canvas_bm.drawOval(rect, paint);
+                        canvas_bm.get(i).drawOval(rect, paint);
                         break;
                     case mode_Eraser:
                         break;
                 }
                 if(drawnow.cliping){
-                    canvas_bm.restore();
+                    canvas_bm.get(i).restore();
+                }
+                if(drawnow.color == Color.TRANSPARENT){
+                    paint.setXfermode(null);
                 }
             }
         }
@@ -213,13 +225,13 @@ public class MyView extends View {
 
     // 画面のイメージを消すメソッド
     static void AllClear(){
-        float width = canvas_bm.getWidth();
-        float height = canvas_bm.getHeight();
-        if(canvas_bm.getSaveCount() > 1){
-            canvas_bm.restore();
+        if(canvas_bm.get(currentLayer).getSaveCount() > 1){
+            canvas_bm.get(currentLayer).restore();
         }
-        paint_ac.setColor(Color.WHITE);                                 // 色を白に設定
-        canvas_bm.drawRect(0, 0, width, height, paint_ac);    // 画面を塗りつぶす
+        paint_ac.setColor(Color.TRANSPARENT);                           // 色を白に設定
+        paint_ac.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        canvas_bm.get(currentLayer).drawRect(0, 0, width, height, paint_ac);    // 画面を塗りつぶす
+        paint_ac.setXfermode(null);
         GhostView.drawghostkey = false;
         layers.get(currentLayer).clear();
         path.reset();
@@ -240,8 +252,10 @@ public class MyView extends View {
             drawlist.remove(index);
             layers.set(currentLayer, drawlist);
         }
-        paint_ac.setColor(Color.WHITE);                                                              // 色を白に設定
-        canvas_bm.drawRect(0, 0, canvas_bm.getWidth(), canvas_bm.getHeight(), paint_ac);    // 画面を塗りつぶす
+        paint_ac.setColor(Color.TRANSPARENT);                           // 色を白に設定
+        paint_ac.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));                                                          // 色を白に設定
+        canvas_bm.get(currentLayer).drawRect(0, 0, width, height, paint_ac);    // 画面を塗りつぶす
+        paint_ac.setXfermode(null);
         myDraw();
     }
 
@@ -252,8 +266,15 @@ public class MyView extends View {
             layers.get(currentLayer).add(tmp);
             keptlist.remove(index);
         }
-        paint_ac.setColor(Color.WHITE);                                                              // 色を白に設定
-        canvas_bm.drawRect(0, 0, canvas_bm.getWidth(), canvas_bm.getHeight(), paint_ac);    // 画面を塗りつぶす
+        paint_ac.setColor(Color.TRANSPARENT);                           // 色を白に設定
+        paint_ac.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        canvas_bm.get(currentLayer).drawRect(0, 0, width, height, paint_ac);    // 画面を塗りつぶす
+        paint_ac.setXfermode(null);
+        myDraw();
+    }
+
+    static void exchangeLayers(int index_a, int index_b){
+        Collections.swap(layers, index_a, index_b);
         myDraw();
     }
 
