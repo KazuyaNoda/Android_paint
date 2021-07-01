@@ -28,8 +28,8 @@ public class GhostView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         RectF rect;                         // 楕円を描くときに用いる
-        paint.setStrokeWidth(5);            // 線の太さを５に設定(将来的に変更できるようにする)
-        paint.setColor(MyView.color);
+        paint.setStrokeWidth(MainActivity.thick);            // 線の太さを５に設定(将来的に変更できるようにする)
+        paint.setColor(MainActivity.color);
 
         if(!MyView.path.isEmpty()){
             paint.setColor(Color.GREEN);

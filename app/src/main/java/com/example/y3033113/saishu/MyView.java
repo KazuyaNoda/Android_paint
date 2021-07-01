@@ -35,6 +35,7 @@ public class MyView extends View {
     static int color = Color.BLACK;
     static int height;
     static int width;
+    static int thick = 5;
     static Paint paint_ac = new Paint();    // allclearをするためのPaint
 
     // 描画モードの定数定義
@@ -122,7 +123,9 @@ public class MyView extends View {
                     points = new ArrayList<>();
                 }
                 else{
-                    newdraw = new Structure(points, color, mode, 5, path, cliping);
+                    color = MainActivity.color;
+                    thick = MainActivity.thick;
+                    newdraw = new Structure(points, color, mode, thick, path, cliping);
                     layers.get(currentLayer).add(newdraw);
 
                     points = new ArrayList<>();

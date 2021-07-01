@@ -15,121 +15,197 @@
         android:layout_height="match_parent" />
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="0dp"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/button_mode"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="~" />
-
-        <Button
-            android:id="@+id/button_color"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            app:backgroundTint="#000000" />
-
-        <Button
-            android:id="@+id/button_tool"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="tool" />
-
-        <Button
-            android:id="@+id/button_layer"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="layer" />
-
-        <Button
-            android:id="@+id/button_output"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="output" />
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/mode"
-        android:layout_width="78dp"
-        android:layout_height="wrap_content"
+        android:layout_width="250dp"
+        android:layout_height="600dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="2dp"
-        android:layout_marginLeft="2dp"
-        android:layout_marginBottom="-3dp"
+        android:layout_marginStart="70dp"
+        android:layout_marginLeft="70dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="70dp"
+        android:layout_marginRight="70dp"
+        android:layout_marginBottom="100dp"
         android:background="#EEEEEE"
         android:orientation="vertical"
         android:visibility="invisible">
 
-        <Button
-            android:id="@+id/button_Line"
+        <TextView
+            android:id="@+id/text_thick"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="~" />
+            android:background="#DDDDDD"
+            android:text="太さ"
+            android:textSize="24sp" />
 
-        <Button
-            android:id="@+id/button_fillRect"
+        <SeekBar
+            android:id="@+id/seekBar_thick"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="■" />
+            android:layout_height="50dp"
+            android:progressTint="#222222"
+            android:thumbTint="#222222" />
 
-        <Button
-            android:id="@+id/button_Rect"
+        <TextView
+            android:id="@+id/text_seekBar_thick"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="□" />
+            android:layout_height="30dp"
+            android:layout_marginBottom="5dp"
+            android:gravity="center"
+            android:text="5"
+            android:textSize="24sp" />
 
-        <Button
-            android:id="@+id/button_fillOval"
+        <TextView
+            android:id="@+id/text_mode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="●" />
+            android:background="#DDDDDD"
+            android:text="描画モード"
+            android:textSize="24sp" />
 
-        <Button
-            android:id="@+id/button_Oval"
+        <TableLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="◯" />
+            android:layout_height="269dp">
 
-        <Button
-            android:id="@+id/button_clip"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="c" />
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
 
-        <Button
-            android:id="@+id/button_clipreset"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="r" />
+                <Button
+                    android:id="@+id/button_Line"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginRight="2dp"
+                    android:text="~" />
 
-        <Button
-            android:id="@+id/button_eraser"
+                <Button
+                    android:id="@+id/button_eraser"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="eraser" />
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <Button
+                    android:id="@+id/button_fillOval"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginRight="2dp"
+                    android:text="●(da)" />
+
+                <Button
+                    android:id="@+id/button_Oval"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="◯(da)" />
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <Button
+                    android:id="@+id/button_fillRect"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginRight="2dp"
+                    android:text="■" />
+
+                <Button
+                    android:id="@+id/button_Rect"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="□" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <Button
+                    android:id="@+id/button_clip"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginRight="2dp"
+                    android:text="c" />
+
+                <Button
+                    android:id="@+id/button_clipreset"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="r" />
+
+            </TableRow>
+        </TableLayout>
+
+        <TextView
+            android:id="@+id/text_option"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="eraser" />
+            android:background="#DDDDDD"
+            android:text="描画オプション"
+            android:textSize="24sp" />
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <Button
+                    android:id="@+id/button2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Button" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </TableLayout>
+
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/color"
-        android:layout_width="248dp"
+        android:layout_width="250dp"
         android:layout_height="600dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="82dp"
-        android:layout_marginLeft="82dp"
-        android:layout_marginBottom="0dp"
+        android:layout_marginStart="70dp"
+        android:layout_marginLeft="70dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="70dp"
+        android:layout_marginRight="70dp"
+        android:layout_marginBottom="100dp"
         android:background="#EEEEEE"
         android:orientation="vertical"
         android:visibility="invisible">
@@ -338,13 +414,13 @@
     <LinearLayout
         android:id="@+id/layer"
         android:layout_width="248dp"
-        android:layout_height="600dp"
+        android:layout_height="450dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="82dp"
         android:layout_marginLeft="82dp"
-        android:layout_marginBottom="0dp"
+        android:layout_marginBottom="150dp"
         android:background="#EEEEEE"
         android:orientation="vertical"
         android:visibility="invisible">
@@ -411,18 +487,48 @@
         android:orientation="vertical"
         android:visibility="invisible" />
 
-    <Button
-        android:id="@+id/button_redo"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="1dp"
-        android:layout_marginLeft="1dp"
-        android:layout_marginTop="0dp"
-        android:layout_toEndOf="@+id/button_undo"
-        android:layout_toRightOf="@+id/button_undo"
-        android:text="→"
-        android:textSize="24sp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="0dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/button_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="~" />
+
+        <Button
+            android:id="@+id/button_color"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:backgroundTint="#000000" />
+
+        <Button
+            android:id="@+id/button_tool"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="tool" />
+
+        <Button
+            android:id="@+id/button_layer"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="layer" />
+
+        <Button
+            android:id="@+id/button_output"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="output" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/button_undo"
@@ -434,7 +540,22 @@
         android:layout_marginStart="0dp"
         android:layout_marginLeft="0dp"
         android:layout_marginTop="0dp"
+        android:gravity="center"
         android:text="←"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/button_redo"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="1dp"
+        android:layout_marginLeft="1dp"
+        android:layout_marginTop="0dp"
+        android:layout_toEndOf="@+id/button_undo"
+        android:layout_toRightOf="@+id/button_undo"
+        android:gravity="center"
+        android:text="→"
         android:textSize="24sp" />
 
     <Button

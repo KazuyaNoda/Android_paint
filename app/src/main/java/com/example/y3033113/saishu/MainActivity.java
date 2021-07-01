@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
     TextView text_G;            // RGBのうちGの値を表示するTextView
     TextView text_B;            // RGBのうちBの値を表示するTextView
     TextView text_alpha;        // 不透明度を表示するTextView
+    TextView text_seekBar_thick;
     TextView text_currentLayer;
 
     EditText et_number;
@@ -82,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
     static SeekBar seekBar_G;       // RGBのうちGの値を入力するSeekBar
     static SeekBar seekBar_B;       // RGBのうちBの値を入力するSeekBar
     static SeekBar seekBar_alpha;   // 不透明度の値を入力するSeekBar
+    static SeekBar seekBar_thick;
 
     static int value_R = 0;         // RGBのうちRの値を格納する変数
     static int value_G = 0;         // RGBのうちGの値を格納する変数
@@ -92,6 +94,8 @@ public class MainActivity extends AppCompatActivity {
     int index;
     int index_a;
     int index_b;
+    static int thick = 10;
+    static int color = Color.BLACK;
 
 
     @Override
@@ -112,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
         text_G = (TextView)findViewById(R.id.textView_G);
         text_B = (TextView)findViewById(R.id.textView_B);
         text_alpha = (TextView)findViewById(R.id.textView_alpha);
+        text_seekBar_thick = (TextView)findViewById(R.id.text_seekBar_thick);
         text_currentLayer = (TextView)findViewById(R.id.text_currentLayer);
 
         et_number = (EditText)findViewById(R.id.editTextNumber);
@@ -125,18 +130,21 @@ public class MainActivity extends AppCompatActivity {
         seekBar_G = (SeekBar)findViewById(R.id.seekBar_G);
         seekBar_B = (SeekBar)findViewById(R.id.seekBar_B);
         seekBar_alpha = (SeekBar)findViewById(R.id.seekBar_alpha);
+        seekBar_thick = (SeekBar)findViewById(R.id.seekBar_thick);
 
-        // seekBarの最大値(ARGBだから0~255)を設定
+        // seekBarの最大値を設定
         seekBar_R.setMax(255);
         seekBar_G.setMax(255);
         seekBar_B.setMax(255);
         seekBar_alpha.setMax(255);
+        seekBar_thick.setMax(15);
 
         // seekBarの初期値を設定
         seekBar_R.setProgress(0);
         seekBar_G.setProgress(0);
         seekBar_B.setProgress(0);
         seekBar_alpha.setProgress(255);
+        seekBar_thick.setProgress(5);
 
         // seekBarのリスナ登録,イベント処理
         seekBar_R.setOnSeekBarChangeListener(
@@ -158,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
                     // ツマミが離されたとき
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
-                        MyView.color = Color.argb(value_alpha, value_R, value_G, value_B);
+                        color = Color.argb(value_alpha, value_R, value_G, value_B);
                     }
                 });
 
@@ -181,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
                     // ツマミが離されたとき
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
-                        MyView.color = Color.argb(value_alpha, value_R, value_G, value_B);
+                        color = Color.argb(value_alpha, value_R, value_G, value_B);
                     }
                 });
 
@@ -204,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
                     // ツマミが離されたとき
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
-                        MyView.color = Color.argb(value_alpha, value_R, value_G, value_B);
+                        color = Color.argb(value_alpha, value_R, value_G, value_B);
                     }
                 });
 
@@ -227,7 +235,29 @@ public class MainActivity extends AppCompatActivity {
                     // ツマミが離されたとき
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
-                        MyView.color = Color.argb(value_alpha, value_R, value_G, value_B);
+                        color = Color.argb(value_alpha, value_R, value_G, value_B);
+                    }
+                });
+
+        seekBar_thick.setOnSeekBarChangeListener(
+                new SeekBar.OnSeekBarChangeListener(){
+
+                    // ツマミがドラッグされたとき
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        thick = progress;
+                        String str = Integer.toString(thick);
+                        text_seekBar_thick.setText(str);
+                    }
+
+                    // ツマミがタッチされたとき
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    }
+
+                    // ツマミが離されたとき
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
                     }
                 });
 
@@ -387,7 +417,13 @@ public class MainActivity extends AppCompatActivity {
             // 押されたとき
             @Override
             public void onClick(View v) {
-                if(viewmode == 0){
+                close_button();
+                if(viewmode == mode_mode){
+                    viewmode = mode_draw;
+                    layout_mode.setVisibility(View.INVISIBLE);
+                    button_close.setVisibility(View.INVISIBLE);
+                }
+                else{
                     viewmode = mode_mode;
                     layout_mode.setVisibility(View.VISIBLE);
                     button_close.setVisibility(View.VISIBLE);
@@ -399,7 +435,13 @@ public class MainActivity extends AppCompatActivity {
             // 押されたとき
             @Override
             public void onClick(View v) {
-                if(viewmode == 0){
+                close_button();
+                if(viewmode == mode_color){
+                    viewmode = mode_draw;
+                    layout_color.setVisibility(View.INVISIBLE);
+                    button_close.setVisibility(View.INVISIBLE);
+                }
+                else{
                     viewmode = mode_color;
                     layout_color.setVisibility(View.VISIBLE);
                     button_close.setVisibility(View.VISIBLE);
@@ -411,7 +453,13 @@ public class MainActivity extends AppCompatActivity {
             // 押されたとき
             @Override
             public void onClick(View v) {
-                if(viewmode == 0){
+                close_button();
+                if(viewmode == mode_tool){
+                    viewmode = mode_draw;
+                    layout_tool.setVisibility(View.INVISIBLE);
+                    button_close.setVisibility(View.INVISIBLE);
+                }
+                else{
                     viewmode = mode_tool;
                     layout_tool.setVisibility(View.VISIBLE);
                     button_close.setVisibility(View.VISIBLE);
@@ -423,9 +471,33 @@ public class MainActivity extends AppCompatActivity {
             // 押されたとき
             @Override
             public void onClick(View v) {
-                if(viewmode == 0){
+                close_button();
+                if(viewmode == mode_layer){
+                    viewmode = mode_draw;
+                    layout_layer.setVisibility(View.INVISIBLE);
+                    button_close.setVisibility(View.INVISIBLE);
+                }
+                else{
                     viewmode = mode_layer;
                     layout_layer.setVisibility(View.VISIBLE);
+                    button_close.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        button_output.setOnClickListener(new View.OnClickListener(){
+            // 押されたとき
+            @Override
+            public void onClick(View v) {
+                close_button();
+                if(viewmode == mode_output){
+                    viewmode = mode_draw;
+                    layout_output.setVisibility(View.INVISIBLE);
+                    button_close.setVisibility(View.INVISIBLE);
+                }
+                else{
+                    viewmode = mode_output;
+                    layout_output.setVisibility(View.VISIBLE);
                     button_close.setVisibility(View.VISIBLE);
                 }
             }
@@ -489,41 +561,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        button_output.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
-            @Override
-            public void onClick(View v) {
-                if(viewmode == 0){
-                    viewmode = mode_output;
-                    layout_output.setVisibility(View.VISIBLE);
-                    button_close.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
         button_close.setOnClickListener(new View.OnClickListener(){
             // 押されたとき
             @Override
             public void onClick(View v) {
-                switch(viewmode){
-                    case mode_mode:
-                        layout_mode.setVisibility(View.INVISIBLE);
-                        break;
-                    case mode_color:
-                        layout_color.setVisibility(View.INVISIBLE);
-                        button_color.setBackgroundColor(MyView.color);
-                        button_color.setText("");
-                        break;
-                    case mode_tool:
-                        layout_tool.setVisibility(View.INVISIBLE);
-                        break;
-                    case mode_layer:
-                        layout_layer.setVisibility(View.INVISIBLE);
-                        break;
-                    case mode_output:
-                        layout_output.setVisibility(View.INVISIBLE);
-                        break;
-                }
+                close_button();
                 viewmode = mode_draw;
                 button_close.setVisibility(View.INVISIBLE);
             }
@@ -533,7 +575,7 @@ public class MainActivity extends AppCompatActivity {
             // 押されたとき
             @Override
             public void onClick(View v) {
-                MyView.color = Color.RED;
+                color = Color.RED;
                 setColor(255, 0, 0);
             }
         });
@@ -542,7 +584,7 @@ public class MainActivity extends AppCompatActivity {
             // 押されたとき
             @Override
             public void onClick(View v) {
-                MyView.color = Color.GREEN;
+                color = Color.GREEN;
                 setColor(0, 255, 0);
             }
         });
@@ -551,7 +593,7 @@ public class MainActivity extends AppCompatActivity {
             // 押されたとき
             @Override
             public void onClick(View v) {
-                MyView.color = Color.BLUE;
+                color = Color.BLUE;
                 setColor(0, 0, 255);
             }
         });
@@ -560,7 +602,7 @@ public class MainActivity extends AppCompatActivity {
             // 押されたとき
             @Override
             public void onClick(View v) {
-                MyView.color = Color.CYAN;
+                color = Color.CYAN;
                 setColor(0, 255, 255);
             }
         });
@@ -569,7 +611,7 @@ public class MainActivity extends AppCompatActivity {
             // 押されたとき
             @Override
             public void onClick(View v) {
-                MyView.color = Color.MAGENTA;
+                color = Color.MAGENTA;
                 setColor(255, 0, 255);
             }
         });
@@ -578,7 +620,7 @@ public class MainActivity extends AppCompatActivity {
             // 押されたとき
             @Override
             public void onClick(View v) {
-                MyView.color = Color.YELLOW;
+                color = Color.YELLOW;
                 setColor(255, 255, 0);
             }
         });
@@ -587,7 +629,7 @@ public class MainActivity extends AppCompatActivity {
             // 押されたとき
             @Override
             public void onClick(View v) {
-                MyView.color = Color.BLACK;
+                color = Color.BLACK;
                 setColor(0, 0, 0);
             }
         });
@@ -596,7 +638,7 @@ public class MainActivity extends AppCompatActivity {
             // 押されたとき
             @Override
             public void onClick(View v) {
-                MyView.color = Color.WHITE;
+                color = Color.WHITE;
                 setColor(255, 255, 255);
             }
         });
@@ -612,5 +654,27 @@ public class MainActivity extends AppCompatActivity {
         text_R.setText(str_R);
         text_G.setText(str_G);
         text_B.setText(str_B);
+    }
+
+    void close_button(){
+        switch(viewmode){
+            case mode_mode:
+                layout_mode.setVisibility(View.INVISIBLE);
+                break;
+            case mode_color:
+                layout_color.setVisibility(View.INVISIBLE);
+                button_color.setBackgroundColor(MyView.color);
+                button_color.setText("");
+                break;
+            case mode_tool:
+                layout_tool.setVisibility(View.INVISIBLE);
+                break;
+            case mode_layer:
+                layout_layer.setVisibility(View.INVISIBLE);
+                break;
+            case mode_output:
+                layout_output.setVisibility(View.INVISIBLE);
+                break;
+        }
     }
 }
