@@ -1,9 +1,14 @@
 package com.example.y3033113.saishu;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
@@ -16,6 +21,14 @@ public class GhostView extends View {
     static boolean drawghostkey = false;        // プレビュー図形の表示を開始/終了するためのboolean型変数
     List<Float> points = new ArrayList<>();
     static Paint paint = new Paint();
+    static Canvas canvas_sub;
+    static Bitmap bitmap_sub;
+    static Matrix matrix = new Matrix();
+
+    static int width;
+    static int height;
+
+    static List<Structure> ghost_layer = new ArrayList<>(64);
 
     public GhostView(Context context) {
         super(context);
@@ -30,6 +43,9 @@ public class GhostView extends View {
         RectF rect;                         // 楕円を描くときに用いる
         paint.setStrokeWidth(MainActivity.thick);            // 線の太さを５に設定(将来的に変更できるようにする)
         paint.setColor(MainActivity.color);
+        if(MainActivity.color == Color.TRANSPARENT){
+            paint.setColor(Color.WHITE);
+        }
 
         if(!MyView.path.isEmpty()){
             paint.setColor(Color.GREEN);
@@ -87,5 +103,30 @@ public class GhostView extends View {
             }
         }
         invalidate();   // 再描画
+    }
+
+    static void getBitmap(){
+        if(canvas_sub == null){
+            canvas_sub = new Canvas(MyView.bitmap.get(MyView.currentLayer));
+        }
+        bitmap_sub = MyView.bitmap.get(MyView.currentLayer);
+        width = bitmap_sub.getWidth();
+        height = bitmap_sub.getHeight();
+    }
+
+    static void expand(int progress){
+        getBitmap();
+        float ratio = (float) ((progress)/ 1000.0);
+        matrix.postScale(0.8f, 0.8f, width/2, height/2);
+        //clear();
+        canvas_sub.drawBitmap(bitmap_sub, matrix,null);
+    }
+
+    static void clear(){
+        paint.setColor(Color.TRANSPARENT);                           // 色を透明に設定
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        canvas_sub.drawRect(0, 0, width, height, paint);    // 画面を塗りつぶす
+        paint.setXfermode(null);
+        paint.setColor(Color.BLACK);
     }
 }
