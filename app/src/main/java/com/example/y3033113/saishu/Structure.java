@@ -1,6 +1,7 @@
 package com.example.y3033113.saishu;
 
 
+import android.graphics.Bitmap;
 import android.graphics.Path;
 
 import java.util.ArrayList;
@@ -13,13 +14,15 @@ public class Structure {
     float thick = 0;
     Path path = null;
     boolean cliping = false;
+    Bitmap bitmap = null;
 
-    Structure(List<Float> points, int color, int mode, float thick, Path path, boolean cliping) {
+    Structure(List<Float> points, int color, int mode, float thick, Path path, boolean cliping, Bitmap bitmap) {
         this.points = points;
         this.color = color;
         this.mode = mode;
         this.thick = thick;
         this.path = path;
         this.cliping = cliping;
+        this.bitmap = bitmap;
     }
 }

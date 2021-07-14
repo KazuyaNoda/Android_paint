@@ -4,9 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
@@ -20,10 +18,16 @@ import java.util.List;
 public class GhostView extends View {
     static boolean drawghostkey = false;        // プレビュー図形の表示を開始/終了するためのboolean型変数
     List<Float> points = new ArrayList<>();
-    static Paint paint = new Paint();
+    static Paint paint;
     static Canvas canvas_sub;
     static Bitmap bitmap_sub;
-    static Matrix matrix = new Matrix();
+    static boolean expanding = false;
+
+    static float prex = 0;
+    static float prey = 0;
+    static float ghost_x = 0;
+    static float ghost_y = 0;
+
 
     static int width;
     static int height;
@@ -40,86 +44,78 @@ public class GhostView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        RectF rect;                         // 楕円を描くときに用いる
+        if(paint == null){
+            paint = new Paint();
+            width = MyView.width;
+            height = MyView.height;
+            bitmap_sub = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            canvas_sub = new Canvas(bitmap_sub);
+        }
+
+        clear();
+
+        if(!MyView.path.isEmpty()){
+            paint.setColor(Color.GREEN);
+            paint.setStyle(Paint.Style.STROKE);
+            canvas_sub.drawPath(MyView.path, paint);
+        }
+
         paint.setStrokeWidth(MainActivity.thick);            // 線の太さを５に設定(将来的に変更できるようにする)
         paint.setColor(MainActivity.color);
         if(MainActivity.color == Color.TRANSPARENT){
             paint.setColor(Color.WHITE);
         }
-
-        if(!MyView.path.isEmpty()){
-            paint.setColor(Color.GREEN);
-            paint.setStyle(Paint.Style.STROKE);
-            canvas.drawPath(MyView.path, paint);
-        }
-
         if(drawghostkey) {                  // プレビュー図形を描画できるとき
-            float prex = 0;
-            float prey = 0;
-            float ghost_x = 0;
-            float ghost_y = 0;
             if(!com.example.y3033113.saishu.MyView.points.isEmpty()){
-                prex = com.example.y3033113.saishu.MyView.points.get(0);
-                prey = com.example.y3033113.saishu.MyView.points.get(1);
-                ghost_x = com.example.y3033113.saishu.MyView.ghost_x;
-                ghost_y = com.example.y3033113.saishu.MyView.ghost_y;
+                prex = MyView.points.get(0);
+                prey = MyView.points.get(1);
             }
-            if(com.example.y3033113.saishu.MyView.moving){
-                switch(com.example.y3033113.saishu.MyView.mode){            // 描画モードによって処理を分ける
-                    case com.example.y3033113.saishu.MyView.mode_Line:
-                        points = com.example.y3033113.saishu.MyView.points;
-                        for(int i=0; i+3<points.size(); i += 2){
-                            canvas.drawLine(points.get(i), points.get(i+1), points.get(i+2), points.get(i+3), paint);
-                        }
-                        break;
-                    case com.example.y3033113.saishu.MyView.mode_fillRect:  // 塗りつぶしあり四角形を描く
-                        paint.setStyle(Paint.Style.FILL);
-                        canvas.drawRect(prex, prey, ghost_x, ghost_y, paint);
-                        break;
-                    case com.example.y3033113.saishu.MyView.mode_Rect:      // 塗りつぶしなし四角形を描く
-                        paint.setStyle(Paint.Style.STROKE);
-                        canvas.drawRect(prex, prey, ghost_x, ghost_y, paint);
-                        break;
-                    case com.example.y3033113.saishu.MyView.mode_fillOval:  // 塗りつぶしあり楕円を描く
-                        rect = new RectF(prex, prey, ghost_x, ghost_y);
-                        paint.setStyle(Paint.Style.FILL);
-                        canvas.drawOval(rect, paint);
-                        break;
-                    case com.example.y3033113.saishu.MyView.mode_Oval:      // 塗りつぶしなし楕円を描く
-                        rect = new RectF(prex, prey, ghost_x, ghost_y);
-                        paint.setStyle(Paint.Style.STROKE);
-                        canvas.drawOval(rect, paint);
-                        break;
-                    case com.example.y3033113.saishu.MyView.mode_clip:
-                        paint.setStyle(Paint.Style.STROKE);
-                        paint.setColor(Color.GREEN);
-                        points = com.example.y3033113.saishu.MyView.points;
-                        for(int i=0; i+3<points.size(); i += 2){
-                            canvas.drawLine(points.get(i), points.get(i+1), points.get(i+2), points.get(i+3), paint);
-                        }
-                        canvas.drawPath(MyView.path, paint);
-                        break;
+            if(MyView.moving){
+                drawghost();
+                canvas.drawBitmap(bitmap_sub, 0, 0, null);
+            }
+        }
+        invalidate();
+    }
+
+
+    void drawghost(){
+        RectF rect;
+        switch(MyView.mode){            // 描画モードによって処理を分ける
+            case MyView.mode_Line:
+                points = MyView.points;
+                for(int i=0; i+3<points.size(); i += 2){
+                    canvas_sub.drawLine(points.get(i), points.get(i+1), points.get(i+2), points.get(i+3), paint);
                 }
-            }
+                break;
+            case MyView.mode_fillRect:  // 塗りつぶしあり四角形を描く
+                paint.setStyle(Paint.Style.FILL);
+                canvas_sub.drawRect(prex, prey, ghost_x, ghost_y, paint);
+                break;
+            case MyView.mode_Rect:      // 塗りつぶしなし四角形を描く
+                paint.setStyle(Paint.Style.STROKE);
+                canvas_sub.drawRect(prex, prey, ghost_x, ghost_y, paint);
+                break;
+            case MyView.mode_fillOval:  // 塗りつぶしあり楕円を描く
+                rect = new RectF(prex, prey, ghost_x, ghost_y);
+                paint.setStyle(Paint.Style.FILL);
+                canvas_sub.drawOval(rect, paint);
+                break;
+            case MyView.mode_Oval:      // 塗りつぶしなし楕円を描く
+                rect = new RectF(prex, prey, ghost_x, ghost_y);
+                paint.setStyle(Paint.Style.STROKE);
+                canvas_sub.drawOval(rect, paint);
+                break;
+            case MyView.mode_clip:
+                paint.setStyle(Paint.Style.STROKE);
+                paint.setColor(Color.GREEN);
+                points = MyView.points;
+                for(int i=0; i+3<points.size(); i += 2){
+                    canvas_sub.drawLine(points.get(i), points.get(i+1), points.get(i+2), points.get(i+3), paint);
+                }
+                canvas_sub.drawPath(MyView.path, paint);
+                break;
         }
-        invalidate();   // 再描画
-    }
-
-    static void getBitmap(){
-        if(canvas_sub == null){
-            canvas_sub = new Canvas(MyView.bitmap.get(MyView.currentLayer));
-        }
-        bitmap_sub = MyView.bitmap.get(MyView.currentLayer);
-        width = bitmap_sub.getWidth();
-        height = bitmap_sub.getHeight();
-    }
-
-    static void expand(int progress){
-        getBitmap();
-        float ratio = (float) ((progress)/ 1000.0);
-        matrix.postScale(0.8f, 0.8f, width/2, height/2);
-        //clear();
-        canvas_sub.drawBitmap(bitmap_sub, matrix,null);
     }
 
     static void clear(){
@@ -127,6 +123,5 @@ public class GhostView extends View {
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
         canvas_sub.drawRect(0, 0, width, height, paint);    // 画面を塗りつぶす
         paint.setXfermode(null);
-        paint.setColor(Color.BLACK);
     }
 }

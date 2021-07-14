@@ -29,8 +29,6 @@ public class MyView extends View {
     static float prey;                      // 図形を描くときのtopにあたる
     static float x;                         // 図形を描くときのrightにあたる
     static float y;                         // 図形を描くときのbottomにあたる
-    static float ghost_x;                   // プレビュー図形のrightにあたる
-    static float ghost_y;                   // プレビュー図形のbottomにあたる
     static Paint paint;                            // キャンバスに描くためのPaint
     static int color = Color.BLACK;
     static int height;
@@ -46,6 +44,7 @@ public class MyView extends View {
     final static byte mode_Oval = 4;         // 塗りつぶしなし楕円
     final static byte mode_clip = 5;
     final static byte mode_Eraser = 6;
+    final static byte mode_bitmap = 7;
 
     static byte mode = mode_Line;            // 描画モードを格納する変数
     static Path path = new Path();
@@ -80,7 +79,6 @@ public class MyView extends View {
 
         if(paint == null){      // paintが定義されていなかったら
             paint = new Paint();                    // paintを宣言
-            paint.setStrokeWidth(5);                // 線の太さを5にする(将来的には変更できるようにする)
             height = canvas.getHeight();
             width = canvas.getWidth();
             bitmap.add(Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888));   // bitmapをcanvasにあわせてつくる
@@ -109,6 +107,7 @@ public class MyView extends View {
                 prey = event.getY();
                 points.add(prex);
                 points.add(prey);
+                GhostView.drawghostkey = true;
                 break;
             case MotionEvent.ACTION_UP:             // 離したとき
                 x = event.getX();                   // 座標を図形の終点に設定
@@ -125,7 +124,7 @@ public class MyView extends View {
                 else{
                     color = MainActivity.color;
                     thick = MainActivity.thick;
-                    newdraw = new Structure(points, color, mode, thick, path, cliping);
+                    newdraw = new Structure(points, color, mode, thick, path, cliping, null);
                     layers.get(currentLayer).add(newdraw);
 
                     points = new ArrayList<>();
@@ -136,20 +135,17 @@ public class MyView extends View {
                     invalidate();                       // 再描画
                 }
 
-
-
                 break;
             case MotionEvent.ACTION_MOVE:           // スライドするとき
                 moving = true;
-                if(mode == mode_Line || mode == mode_clip){              // 描画モードが線のとき
-                    x = event.getX();               // 座標を終点に設定
-                    y = event.getY();
-                    points.add(x);
-                    points.add(y);
+                if(MyView.mode == MyView.mode_Line || MyView.mode == MyView.mode_clip){              // 描画モードが線のとき
+                    MyView.x = event.getX();               // 座標を終点に設定
+                    MyView.y = event.getY();
+                    MyView.points.add(MyView.x);
+                    MyView.points.add(MyView.y);
                 }
-                ghost_x = event.getX();         // 座標をプレビュー図形の終点に設定
-                ghost_y = event.getY();
-                GhostView.drawghostkey = true;  // プレビュー図形の表示を開始
+                GhostView.ghost_x = event.getX();         // 座標をプレビュー図形の終点に設定
+                GhostView.ghost_y = event.getY();
                 break;
         }
 
@@ -160,6 +156,13 @@ public class MyView extends View {
         RectF rect;             // 楕円を描くときに用いる
         Structure drawnow;
         List<Float> drawpoints;
+
+        paint.setColor(Color.TRANSPARENT);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        for(int i=0; i<layers.size(); i++){
+            canvas_bm.get(i).drawRect(0, 0, width, height, paint);
+        }
+        paint.setXfermode(null);
 
         for(int i=0; i<layers.size(); i++){
             for(int j=0; j<layers.get(i).size(); j++){
@@ -201,6 +204,9 @@ public class MyView extends View {
                         canvas_bm.get(i).drawOval(rect, paint);
                         break;
                     case mode_Eraser:
+                        break;
+                    case mode_bitmap:
+                        canvas_bm.get(i).drawBitmap(drawnow.bitmap, 0,0,null);
                         break;
                 }
                 if(drawnow.cliping){
@@ -278,6 +284,7 @@ public class MyView extends View {
 
     static void exchangeLayers(int index_a, int index_b){
         Collections.swap(layers, index_a, index_b);
+
         myDraw();
     }
 

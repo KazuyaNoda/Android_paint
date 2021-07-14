@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
         seekBar_B = (SeekBar)findViewById(R.id.seekBar_B);
         seekBar_alpha = (SeekBar)findViewById(R.id.seekBar_alpha);
         seekBar_thick = (SeekBar)findViewById(R.id.seekBar_thick);
-        seekBar_expand = (SeekBar)findViewById(R.id.seekBar_expand);
+        //seekBar_expand = (SeekBar)findViewById(R.id.seekBar_expand);
 
         // seekBarの最大値を設定
         seekBar_R.setMax(255);
@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
         seekBar_B.setMax(255);
         seekBar_alpha.setMax(255);
         seekBar_thick.setMax(15);
-        seekBar_expand.setMax(1500);
+        //seekBar_expand.setMax(1500);
 
         // seekBarの初期値を設定
         seekBar_R.setProgress(0);
@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
         seekBar_B.setProgress(0);
         seekBar_alpha.setProgress(255);
         seekBar_thick.setProgress(5);
-        seekBar_expand.setProgress(500);
+        //seekBar_expand.setProgress(500);
 
         // seekBarのリスナ登録,イベント処理
         seekBar_R.setOnSeekBarChangeListener(
@@ -265,26 +265,6 @@ public class MainActivity extends AppCompatActivity {
                         thick = progress;
                         String str = Integer.toString(thick);
                         text_seekBar_thick.setText(str);
-                    }
-
-                    // ツマミがタッチされたとき
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                    }
-
-                    // ツマミが離されたとき
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                    }
-                });
-
-        seekBar_expand.setOnSeekBarChangeListener(
-                new SeekBar.OnSeekBarChangeListener(){
-
-                    // ツマミがドラッグされたとき
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        GhostView.expand(progress + 500);
                     }
 
                     // ツマミがタッチされたとき
@@ -612,7 +592,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 viewmode = mode_expand;
-                seekBar_expand.setProgress(500);
+                ReshapeView.expand();
                 layout_expand.setVisibility(View.VISIBLE);
                 button_close.setVisibility(View.INVISIBLE);
                 layout_tool.setVisibility(View.INVISIBLE);
@@ -623,9 +603,14 @@ public class MainActivity extends AppCompatActivity {
             // 押されたとき
             @Override
             public void onClick(View v) {
-                GhostView.clear();
+                MyView.keptlist = MyView.layers.get(MyView.currentLayer);
+                MyView.layers.set(MyView.currentLayer, new ArrayList<>());
+                MyView.layers.get(MyView.currentLayer).add(new Structure(null, 0, MyView.mode_bitmap, 0, null, false, ReshapeView.bm_rv));
+                MyView.myDraw();
 
+                ReshapeView.end();
 
+                viewmode = mode_draw;
                 layout_expand.setVisibility(View.INVISIBLE);
             }
         });
@@ -636,6 +621,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 viewmode = mode_draw;
                 layout_expand.setVisibility(View.INVISIBLE);
+                ReshapeView.end();
             }
         });
 
