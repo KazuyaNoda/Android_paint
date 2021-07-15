@@ -15,6 +15,7 @@ import android.view.View;
 public class ReshapeView extends View {
     static Bitmap bitmap;
     static Bitmap bm_rv;
+    static Bitmap bm_reshaped;
     static Canvas canvas_rv;
     static Paint paint;
     Matrix matrix;
@@ -39,8 +40,7 @@ public class ReshapeView extends View {
         if(reshaping){
             if(paint == null){
                 paint = new Paint();
-                paint.setColor(Color.TRANSPARENT);                           // 色を透明に設定
-                paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+                paint.setColor(Color.WHITE);
                 width = MyView.width;
                 height = MyView.height;
                 bm_rv = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
@@ -49,8 +49,16 @@ public class ReshapeView extends View {
             canvas_rv.drawRect(0, 0, width, height, paint);    // 画面を塗りつぶす
             canvas.drawRect(0, 0, width, height, paint);
 
+            for(int i=0; i<MyView.bitmap.size(); i++){
+                if(i != MyView.currentLayer){
+                    canvas_rv.drawBitmap(MyView.bitmap.get(i), 0, 0, null);
+                }
+            }
             canvas_rv.drawBitmap(bitmap, matrix,null);
             canvas.drawBitmap(bm_rv, 0, 0, null);
+        }
+        else{
+            canvas.drawColor(Color.TRANSPARENT);
         }
     }
 
@@ -58,9 +66,14 @@ public class ReshapeView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         switch(event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                reshaping = true;
                 y = event.getY();
                 break;
             case MotionEvent.ACTION_UP:
+                bm_reshaped = bm_rv.copy(Bitmap.Config.ARGB_8888, true);
+                MyView.canvas_bm.get(MyView.currentLayer).drawColor(Color.TRANSPARENT);
+                MyView.canvas_bm.get(MyView.currentLayer).drawBitmap(bm_reshaped, 0, 0, null);
+                reshaping = false;
                 invalidate();
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -77,14 +90,12 @@ public class ReshapeView extends View {
     static void expand(){
         bitmap = MyView.bitmap.get(MyView.currentLayer).copy(Bitmap.Config.ARGB_8888, true);
         touching_rv = true;
-        reshaping = true;
         expanding = true;
     }
 
     static void end(){
         canvas_rv.drawRect(0, 0, width, height, paint);
         touching_rv = false;
-        reshaping = false;
         expanding = false;
     }
 }

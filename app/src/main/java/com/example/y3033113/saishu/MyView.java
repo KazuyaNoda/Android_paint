@@ -87,7 +87,7 @@ public class MyView extends View {
 
         myDraw();
 
-
+        canvas.drawColor(Color.WHITE);
         for(int i=0; i<layers.size(); i++){
             canvas.drawBitmap(bitmap.get(i), 0, 0, null);  // canvasにbitmapのイメージを描く
         }
@@ -159,7 +159,7 @@ public class MyView extends View {
 
         paint.setColor(Color.TRANSPARENT);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-        for(int i=0; i<layers.size(); i++){
+        for(int i=1; i<layers.size(); i++){
             canvas_bm.get(i).drawRect(0, 0, width, height, paint);
         }
         paint.setXfermode(null);

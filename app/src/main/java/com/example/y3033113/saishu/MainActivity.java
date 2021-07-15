@@ -605,7 +605,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 MyView.keptlist = MyView.layers.get(MyView.currentLayer);
                 MyView.layers.set(MyView.currentLayer, new ArrayList<>());
-                MyView.layers.get(MyView.currentLayer).add(new Structure(null, 0, MyView.mode_bitmap, 0, null, false, ReshapeView.bm_rv));
+                MyView.layers.get(MyView.currentLayer).add(new Structure(null, 0, MyView.mode_bitmap, 0, null, false, ReshapeView.bm_reshaped));
                 MyView.myDraw();
 
                 ReshapeView.end();
@@ -622,6 +622,7 @@ public class MainActivity extends AppCompatActivity {
                 viewmode = mode_draw;
                 layout_expand.setVisibility(View.INVISIBLE);
                 ReshapeView.end();
+                MyView.myDraw();
             }
         });
 
