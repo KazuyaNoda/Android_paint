@@ -397,10 +397,10 @@
             android:text="ac" />
 
         <Button
-            android:id="@+id/button_expand"
+            android:id="@+id/button_reshape"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="expand" />
+            android:text="reshape" />
 
         <Button
             android:id="@+id/button11"
@@ -578,7 +578,7 @@
         app:backgroundTint="#FF2222" />
 
     <LinearLayout
-        android:id="@+id/layout_expand"
+        android:id="@+id/layout_reshape"
         android:layout_width="300dp"
         android:layout_height="100dp"
         android:layout_alignParentStart="true"
@@ -594,11 +594,11 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/button_expand_ok"
+                android:id="@+id/button_reshape_ok"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="5dp"
@@ -608,13 +608,40 @@
                 android:textSize="24sp" />
 
             <Button
-                android:id="@+id/button_expand_no"
+                android:id="@+id/button_reshape_no"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="×"
                 android:textSize="24sp"
                 app:backgroundTint="#FF2222" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button_expand"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:text="expand"
+                app:backgroundTint="#2196F3" />
+
+            <Button
+                android:id="@+id/button_slide"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="50dp"
+                android:layout_weight="1"
+                android:text="slide"
+                app:backgroundTint="#49BEFF" />
         </LinearLayout>
     </LinearLayout>
 

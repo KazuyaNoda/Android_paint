@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout layout_tool;
     LinearLayout layout_layer;
     LinearLayout layout_output;
-    LinearLayout layout_expand;
+    LinearLayout layout_reshape;
 
     Button button_redo;
     Button button_undo;
@@ -69,10 +69,12 @@ public class MainActivity extends AppCompatActivity {
     Button button_white;
 
     Button button_ac;           // allclear機能を持たせるボタン
-    Button button_expand;
+    Button button_reshape;
 
-    Button button_expand_ok;
-    Button button_expand_no;
+    Button button_reshape_ok;
+    Button button_reshape_no;
+    Button button_expand;
+    Button button_slide;
 
     Button button_add_layer;
     Button button_change_layer;
@@ -96,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
     static SeekBar seekBar_B;       // RGBのうちBの値を入力するSeekBar
     static SeekBar seekBar_alpha;   // 不透明度の値を入力するSeekBar
     static SeekBar seekBar_thick;
-    static SeekBar seekBar_expand;
 
     static int value_R = 0;         // RGBのうちRの値を格納する変数
     static int value_G = 0;         // RGBのうちGの値を格納する変数
@@ -123,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         layout_tool = (LinearLayout)findViewById(R.id.tool);
         layout_layer = (LinearLayout)findViewById(R.id.layer);
         layout_output = (LinearLayout)findViewById(R.id.output);
-        layout_expand = (LinearLayout)findViewById(R.id.layout_expand);
+        layout_reshape = (LinearLayout)findViewById(R.id.layout_reshape);
 
         // TextViewの設定
         text_R = (TextView)findViewById(R.id.textView_R);
@@ -145,7 +146,6 @@ public class MainActivity extends AppCompatActivity {
         seekBar_B = (SeekBar)findViewById(R.id.seekBar_B);
         seekBar_alpha = (SeekBar)findViewById(R.id.seekBar_alpha);
         seekBar_thick = (SeekBar)findViewById(R.id.seekBar_thick);
-        //seekBar_expand = (SeekBar)findViewById(R.id.seekBar_expand);
 
         // seekBarの最大値を設定
         seekBar_R.setMax(255);
@@ -153,7 +153,6 @@ public class MainActivity extends AppCompatActivity {
         seekBar_B.setMax(255);
         seekBar_alpha.setMax(255);
         seekBar_thick.setMax(15);
-        //seekBar_expand.setMax(1500);
 
         // seekBarの初期値を設定
         seekBar_R.setProgress(0);
@@ -161,7 +160,6 @@ public class MainActivity extends AppCompatActivity {
         seekBar_B.setProgress(0);
         seekBar_alpha.setProgress(255);
         seekBar_thick.setProgress(5);
-        //seekBar_expand.setProgress(500);
 
         // seekBarのリスナ登録,イベント処理
         seekBar_R.setOnSeekBarChangeListener(
@@ -308,10 +306,12 @@ public class MainActivity extends AppCompatActivity {
         button_white = (Button)findViewById(R.id.button_white);
 
         button_ac = (Button)findViewById(R.id.button_ac);
-        button_expand = (Button)findViewById(R.id.button_expand);
+        button_reshape = (Button)findViewById(R.id.button_reshape);
 
-        button_expand_ok = (Button)findViewById(R.id.button_expand_ok);
-        button_expand_no = (Button)findViewById(R.id.button_expand_no);
+        button_reshape_ok = (Button)findViewById(R.id.button_reshape_ok);
+        button_reshape_no = (Button)findViewById(R.id.button_reshape_no);
+        button_expand = (Button)findViewById(R.id.button_expand);
+        button_slide = (Button)findViewById(R.id.button_slide);
 
         button_add_layer = (Button)findViewById(R.id.button_add_layer);
         button_change_layer = (Button)findViewById(R.id.button_change_layer);
@@ -323,9 +323,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 MyView.AllClear();  // 画面を白に塗りつぶす(MyView.javaのメソッド)
-                viewmode = mode_draw;
-                layout_tool.setVisibility(View.INVISIBLE);
-                button_close.setVisibility(View.INVISIBLE);
+                close_button();
             }
         });
 
@@ -354,10 +352,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 MyView.mode = MyView.mode_Line;     // 線を引くモードにする
-                viewmode = mode_draw;
                 button_mode.setText("~");
-                layout_mode.setVisibility(View.INVISIBLE);
-                button_close.setVisibility(View.INVISIBLE);
+                close_button();
             }
         });
 
@@ -366,10 +362,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 MyView.mode = MyView.mode_fillRect; // 塗りつぶしあり四角形を描くモードにする
-                viewmode = mode_draw;
                 button_mode.setText("■");
-                layout_mode.setVisibility(View.INVISIBLE);
-                button_close.setVisibility(View.INVISIBLE);
+                close_button();
             }
         });
 
@@ -378,10 +372,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 MyView.mode = MyView.mode_Rect;     // 塗りつぶしなし四角形を描くモードにする
-                viewmode = mode_draw;
                 button_mode.setText("□");
-                layout_mode.setVisibility(View.INVISIBLE);
-                button_close.setVisibility(View.INVISIBLE);
+                close_button();
             }
         });
 
@@ -390,10 +382,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 MyView.mode = MyView.mode_fillOval; // 塗りつぶしあり楕円を描くモードにする
-                viewmode = mode_draw;
                 button_mode.setText("●");
-                layout_mode.setVisibility(View.INVISIBLE);
-                button_close.setVisibility(View.INVISIBLE);
+                close_button();
             }
         });
 
@@ -402,29 +392,23 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 MyView.mode = MyView.mode_Oval;     // 塗りつぶしなし楕円を描くモードにする
-                viewmode = mode_draw;
                 button_mode.setText("◯");
-                layout_mode.setVisibility(View.INVISIBLE);
-                button_close.setVisibility(View.INVISIBLE);
+                close_button();
             }
         });
 
         button_clip.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 MyView.mode = MyView.mode_clip;
-                viewmode = mode_draw;
                 button_mode.setText("c");
-                layout_mode.setVisibility(View.INVISIBLE);
-                button_close.setVisibility(View.INVISIBLE);
+                close_button();
             }
         });
 
         button_clipreset.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 MyView.clipReset();
-                viewmode = mode_draw;
-                layout_mode.setVisibility(View.INVISIBLE);
-                button_close.setVisibility(View.INVISIBLE);
+                close_button();
             }
         });
 
@@ -432,10 +416,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v){
                 color = Color.TRANSPARENT;
 
-                viewmode = mode_draw;
+                close_button();
                 button_color.setText("era");
-                layout_mode.setVisibility(View.INVISIBLE);
-                button_close.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -445,9 +427,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 close_button();
                 if(viewmode == mode_mode){
-                    viewmode = mode_draw;
-                    layout_mode.setVisibility(View.INVISIBLE);
-                    button_close.setVisibility(View.INVISIBLE);
+                    close_button();
                 }
                 else{
                     viewmode = mode_mode;
@@ -463,9 +443,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 close_button();
                 if(viewmode == mode_color){
-                    viewmode = mode_draw;
-                    layout_color.setVisibility(View.INVISIBLE);
-                    button_close.setVisibility(View.INVISIBLE);
+                    close_button();
                 }
                 else{
                     viewmode = mode_color;
@@ -481,9 +459,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 close_button();
                 if(viewmode == mode_tool){
-                    viewmode = mode_draw;
-                    layout_tool.setVisibility(View.INVISIBLE);
-                    button_close.setVisibility(View.INVISIBLE);
+                    close_button();
                 }
                 else{
                     viewmode = mode_tool;
@@ -499,9 +475,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 close_button();
                 if(viewmode == mode_layer){
-                    viewmode = mode_draw;
-                    layout_layer.setVisibility(View.INVISIBLE);
-                    button_close.setVisibility(View.INVISIBLE);
+                    close_button();
                 }
                 else{
                     viewmode = mode_layer;
@@ -517,9 +491,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 close_button();
                 if(viewmode == mode_output){
-                    viewmode = mode_draw;
-                    layout_output.setVisibility(View.INVISIBLE);
-                    button_close.setVisibility(View.INVISIBLE);
+                    close_button();
                 }
                 else{
                     viewmode = mode_output;
@@ -587,42 +559,61 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        button_expand.setOnClickListener(new View.OnClickListener(){
+        button_reshape.setOnClickListener(new View.OnClickListener(){
             // 押されたとき
             @Override
             public void onClick(View v) {
                 viewmode = mode_expand;
                 ReshapeView.expand();
-                layout_expand.setVisibility(View.VISIBLE);
+                layout_reshape.setVisibility(View.VISIBLE);
                 button_close.setVisibility(View.INVISIBLE);
                 layout_tool.setVisibility(View.INVISIBLE);
             }
         });
 
-        button_expand_ok.setOnClickListener(new View.OnClickListener(){
+        button_reshape_ok.setOnClickListener(new View.OnClickListener(){
             // 押されたとき
             @Override
             public void onClick(View v) {
                 MyView.keptlist = MyView.layers.get(MyView.currentLayer);
                 MyView.layers.set(MyView.currentLayer, new ArrayList<>());
                 MyView.layers.get(MyView.currentLayer).add(new Structure(null, 0, MyView.mode_bitmap, 0, null, false, ReshapeView.bm_reshaped));
+
                 MyView.myDraw();
-
                 ReshapeView.end();
-
                 viewmode = mode_draw;
-                layout_expand.setVisibility(View.INVISIBLE);
+                layout_reshape.setVisibility(View.INVISIBLE);
             }
         });
 
-        button_expand_no.setOnClickListener(new View.OnClickListener(){
+        button_reshape_no.setOnClickListener(new View.OnClickListener(){
             // 押されたとき
             @Override
             public void onClick(View v) {
-                viewmode = mode_draw;
-                layout_expand.setVisibility(View.INVISIBLE);
                 ReshapeView.end();
                 MyView.myDraw();
+                viewmode = mode_draw;
+                layout_reshape.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        button_expand.setOnClickListener(new View.OnClickListener(){
+            // 押されたとき
+            @Override
+            public void onClick(View v) {
+                button_expand.setBackgroundColor(Color.rgb(33, 150, 243));
+                button_slide.setBackgroundColor(Color.rgb(73, 190, 255));
+                ReshapeView.expand();
+            }
+        });
+
+        button_slide.setOnClickListener(new View.OnClickListener(){
+            // 押されたとき
+            @Override
+            public void onClick(View v) {
+                button_slide.setBackgroundColor(Color.rgb(33, 150, 243));
+                button_expand.setBackgroundColor(Color.rgb(73, 190, 255));
+                ReshapeView.slide();
             }
         });
 
@@ -631,8 +622,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 close_button();
-                viewmode = mode_draw;
-                button_close.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -719,6 +708,11 @@ public class MainActivity extends AppCompatActivity {
         text_R.setText(str_R);
         text_G.setText(str_G);
         text_B.setText(str_B);
+        layout_color.setVisibility(View.INVISIBLE);
+        button_close.setVisibility(View.INVISIBLE);
+        button_color.setBackgroundColor(color);
+        button_color.setText("");
+        viewmode = mode_draw;
     }
 
     void close_button(){
@@ -740,6 +734,10 @@ public class MainActivity extends AppCompatActivity {
             case mode_output:
                 layout_output.setVisibility(View.INVISIBLE);
                 break;
+        }
+        viewmode = mode_draw;
+        if(button_close.getVisibility() == View.VISIBLE){
+            button_close.setVisibility(View.INVISIBLE);
         }
     }
 }
