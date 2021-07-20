@@ -32,8 +32,6 @@ public class GhostView extends View {
     static int width;
     static int height;
 
-    static List<Structure> ghost_layer = new ArrayList<>(64);
-
     public GhostView(Context context) {
         super(context);
     }

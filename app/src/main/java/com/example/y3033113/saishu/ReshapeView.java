@@ -70,42 +70,44 @@ public class ReshapeView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        switch(event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                reshaping = true;
-                x = event.getX();
-                y = event.getY();
-                break;
-            case MotionEvent.ACTION_UP:
-                bm_reshaped = bm_rv.copy(Bitmap.Config.ARGB_8888, true);
-                MyView.canvas_bm.get(MyView.currentLayer).drawColor(Color.TRANSPARENT);
-                MyView.canvas_bm.get(MyView.currentLayer).drawBitmap(bm_reshaped, 0, 0, null);
+        if(touching_rv){
+            switch(event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    reshaping = true;
+                    x = event.getX();
+                    y = event.getY();
+                    break;
+                case MotionEvent.ACTION_UP:
+                    bm_reshaped = bm_rv.copy(Bitmap.Config.ARGB_8888, true);
+                    MyView.canvas_bm.get(MyView.currentLayer).drawColor(Color.TRANSPARENT);
+                    MyView.canvas_bm.get(MyView.currentLayer).drawBitmap(bm_reshaped, 0, 0, null);
 
-                reshaping = false;
-                invalidate();
-                break;
-            case MotionEvent.ACTION_MOVE:
-                next_x = event.getX();
-                next_y = event.getY();
+                    reshaping = false;
+                    invalidate();
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    next_x = event.getX();
+                    next_y = event.getY();
 
-                matrix = new Matrix();
-                if(expanding){
-                    ratio = (float)(((float)(height+y-next_y))/height);
-                    matrix.preScale(ratio, ratio, width/2, height/2);
-                }
-                else if(sliding){
-                    dx = Math.abs(next_x - x);
-                    dy = Math.abs(next_y - y);
-                    if(x > next_x){
-                        dx = -dx;
+                    matrix = new Matrix();
+                    if(expanding){
+                        ratio = (float)(((float)(height+y-next_y))/height);
+                        matrix.preScale(ratio, ratio, width/2, height/2);
                     }
-                    if(y > next_y){
-                        dy = -dy;
+                    else if(sliding){
+                        dx = Math.abs(next_x - x);
+                        dy = Math.abs(next_y - y);
+                        if(x > next_x){
+                            dx = -dx;
+                        }
+                        if(y > next_y){
+                            dy = -dy;
+                        }
+                        matrix.setTranslate(dx, dy);
                     }
-                    matrix.setTranslate(dx, dy);
-                }
-                invalidate();
-                break;
+                    invalidate();
+                    break;
+            }
         }
         return touching_rv;
     }

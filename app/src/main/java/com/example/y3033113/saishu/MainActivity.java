@@ -138,22 +138,6 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 if(mode == mode_gallery){
-                    if(selected == showingWork){
-                        turnOffButtons();
-                        selected = none;
-                    }
-                    else{
-                        turnOnButtons();
-                        selected = showingWork;
-                    }
-                }
-            }
-        });
-
-        image_work2.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                if(mode == mode_gallery){
                     if(selected == showingWork+1){
                         turnOffButtons();
                         selected = none;
@@ -166,7 +150,7 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        image_work3.setOnClickListener(new View.OnClickListener(){
+        image_work2.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 if(mode == mode_gallery){
@@ -182,7 +166,7 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        image_work4.setOnClickListener(new View.OnClickListener(){
+        image_work3.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 if(mode == mode_gallery){
@@ -198,7 +182,7 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        image_work5.setOnClickListener(new View.OnClickListener(){
+        image_work4.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 if(mode == mode_gallery){
@@ -209,6 +193,22 @@ public class MainActivity extends AppCompatActivity{
                     else{
                         turnOnButtons();
                         selected = showingWork+4;
+                    }
+                }
+            }
+        });
+
+        image_work5.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if(mode == mode_gallery){
+                    if(selected == showingWork+5){
+                        turnOffButtons();
+                        selected = none;
+                    }
+                    else{
+                        turnOnButtons();
+                        selected = showingWork+5;
                     }
                 }
             }
@@ -315,6 +315,7 @@ public class MainActivity extends AppCompatActivity{
                 deleteWork();
                 mode = mode_gallery;
                 layout_check.setVisibility(View.INVISIBLE);
+                renew();
             }
         });
 
@@ -348,7 +349,7 @@ public class MainActivity extends AppCompatActivity{
         //image_title.setVisibility(View.INVISIBLE);
         layout_gallery.setVisibility(View.VISIBLE);
 
-        road();
+        load();
         renew();
     }
 
@@ -363,7 +364,7 @@ public class MainActivity extends AppCompatActivity{
         turnOffButtons();
     }
 
-    void road(){
+    void load(){
         int i = 1;
         try{
             while(true){
@@ -380,7 +381,6 @@ public class MainActivity extends AppCompatActivity{
 
         gallerySize = i;
         newWork = i;
-        System.out.println(i);
         String[] widthArray = new String[gallerySize-1];
         String[] heightArray = new String[gallerySize-1];
         try{
@@ -435,7 +435,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
     void setupWork(){
-        filePath = "work" + Integer.toString(selected + 1);
+        filePath = "work" + Integer.toString(selected);
         String tmp;
         List<String> in = new ArrayList<>();
 
@@ -480,13 +480,28 @@ public class MainActivity extends AppCompatActivity{
     }
 
     void deleteWork(){
-        filePath = "work" + Integer.toString(workNum);
+        filePath = "work" + Integer.toString(selected);
         try{
             File file = new File(getApplicationContext().getFilesDir(), filePath + ".txt");
             file.delete();
+
+            file = new File(getApplicationContext().getFilesDir(), filePath + ".png");
+            file.delete();
+
+            int j = 1;
+            while(true){
+                file = new File(getApplicationContext().getFilesDir(), filePath + "_" + Integer.toString(j) + ".png");
+                if(!file.exists()){
+                    break;
+                }
+                file.delete();
+                j++;
+            }
         }catch(Exception e){
             e.printStackTrace();
         }
+
+        bitmap_works.remove(selected-1);
     }
 
     void startWork(){

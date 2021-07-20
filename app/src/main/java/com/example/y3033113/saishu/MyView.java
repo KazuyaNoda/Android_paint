@@ -96,7 +96,6 @@ public class MyView extends View {
                 canvas_bm.add(canvas_bm.size(), new Canvas(bitmap.get(canvas_bm.size()-1)));
             }
         }
-        System.out.println(String.format("myDrawの前 : %d", layers.size()));
 
         myDraw();
 
@@ -176,7 +175,6 @@ public class MyView extends View {
 
         paint.setColor(Color.TRANSPARENT);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-        System.out.println(String.format("errorの前: %d", layers.size()));
         for(int i=0; i<layers.size(); i++){
             canvas_bm.get(i).drawRect(0, 0, width, height, paint);
         }
