@@ -95,6 +95,7 @@ public class MainActivity2 extends AppCompatActivity {
     Button button_layer_down;
     Button button_visible_layer1;
     Button button_visible_layer2;
+    Button button_preview;
 
     Button button_output_yes;
     Button button_output_no;
@@ -371,6 +372,7 @@ public class MainActivity2 extends AppCompatActivity {
         button_layer_down = (Button)findViewById(R.id.button_layer_down);
         button_visible_layer1 = (Button)findViewById(R.id.button_visible_layer1);
         button_visible_layer2 = (Button)findViewById(R.id.button_visible_layer2);
+        button_preview = (Button)findViewById(R.id.button_preview);
 
         button_output_yes = (Button)findViewById(R.id.button_output_yes);
         button_output_no = (Button)findViewById(R.id.button_output_no);
@@ -682,6 +684,14 @@ public class MainActivity2 extends AppCompatActivity {
                     MyView.invisible.add(0, String.format("%d",showingLayer + 1));
                 }
                 showBitmap();
+            }
+        });
+
+        button_preview.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity2.this, MainActivity3.class);
+                startActivity(intent);
             }
         });
 

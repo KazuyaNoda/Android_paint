@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity{
     LinearLayout layout_work4;
     LinearLayout layout_work5;
     LinearLayout layout_work6;
+    LinearLayout layout_selected;
     LinearLayout layout_check;
 
     LinearLayout[] layout_works = new LinearLayout[6];
@@ -96,6 +97,7 @@ public class MainActivity extends AppCompatActivity{
         layout_work4 = (LinearLayout)findViewById(R.id.layout_work4);
         layout_work5 = (LinearLayout)findViewById(R.id.layout_work5);
         layout_work6 = (LinearLayout)findViewById(R.id.layout_work6);
+        layout_selected = (LinearLayout)findViewById(R.id.layout_selected);
         layout_check = (LinearLayout)findViewById(R.id.layout_check);
 
         layout_works[0] = layout_work1;
@@ -139,11 +141,11 @@ public class MainActivity extends AppCompatActivity{
             public void onClick(View v) {
                 if(mode == mode_gallery){
                     if(selected == showingWork+1){
-                        turnOffButtons();
+                        layout_selected.setVisibility(View.INVISIBLE);
                         selected = none;
                     }
                     else{
-                        turnOnButtons();
+                        layout_selected.setVisibility(View.VISIBLE);
                         selected = showingWork+1;
                     }
                 }
@@ -155,11 +157,11 @@ public class MainActivity extends AppCompatActivity{
             public void onClick(View v) {
                 if(mode == mode_gallery){
                     if(selected == showingWork+2){
-                        turnOffButtons();
+                        layout_selected.setVisibility(View.INVISIBLE);
                         selected = none;
                     }
                     else{
-                        turnOnButtons();
+                        layout_selected.setVisibility(View.VISIBLE);
                         selected = showingWork+2;
                     }
                 }
@@ -171,11 +173,11 @@ public class MainActivity extends AppCompatActivity{
             public void onClick(View v) {
                 if(mode == mode_gallery){
                     if(selected == showingWork+3){
-                        turnOffButtons();
+                        layout_selected.setVisibility(View.INVISIBLE);
                         selected = none;
                     }
                     else{
-                        turnOnButtons();
+                        layout_selected.setVisibility(View.VISIBLE);
                         selected = showingWork+3;
                     }
                 }
@@ -187,11 +189,11 @@ public class MainActivity extends AppCompatActivity{
             public void onClick(View v) {
                 if(mode == mode_gallery){
                     if(selected == showingWork+4){
-                        turnOffButtons();
+                        layout_selected.setVisibility(View.INVISIBLE);
                         selected = none;
                     }
                     else{
-                        turnOnButtons();
+                        layout_selected.setVisibility(View.VISIBLE);
                         selected = showingWork+4;
                     }
                 }
@@ -203,11 +205,11 @@ public class MainActivity extends AppCompatActivity{
             public void onClick(View v) {
                 if(mode == mode_gallery){
                     if(selected == showingWork+5){
-                        turnOffButtons();
+                        layout_selected.setVisibility(View.INVISIBLE);
                         selected = none;
                     }
                     else{
-                        turnOnButtons();
+                        layout_selected.setVisibility(View.VISIBLE);
                         selected = showingWork+5;
                     }
                 }
@@ -219,11 +221,11 @@ public class MainActivity extends AppCompatActivity{
             public void onClick(View v) {
                 if(mode == mode_gallery){
                     if(selected == showingWork+5){
-                        turnOffButtons();
+                        layout_selected.setVisibility(View.INVISIBLE);
                         selected = none;
                     }
                     else{
-                        turnOnButtons();
+                        layout_selected.setVisibility(View.VISIBLE);
                         selected = showingWork+5;
                     }
                 }
@@ -314,7 +316,9 @@ public class MainActivity extends AppCompatActivity{
             public void onClick(View v) {
                 deleteWork();
                 mode = mode_gallery;
+                selected = none;
                 layout_check.setVisibility(View.INVISIBLE);
+                layout_selected.setVisibility(View.INVISIBLE);
                 renew();
             }
         });
@@ -347,6 +351,7 @@ public class MainActivity extends AppCompatActivity{
         mode = mode_gallery;
         text_title.setVisibility(View.INVISIBLE);
         //image_title.setVisibility(View.INVISIBLE);
+        button_add_work.setVisibility(View.VISIBLE);
         layout_gallery.setVisibility(View.VISIBLE);
 
         load();
@@ -357,11 +362,12 @@ public class MainActivity extends AppCompatActivity{
         mode = mode_title;
         text_title.setVisibility(View.VISIBLE);
         //image_title.setVisibility(View.VISIBLE);
+        button_add_work.setVisibility(View.INVISIBLE);
         layout_gallery.setVisibility(View.INVISIBLE);
 
         bitmap_works = new ArrayList<>(10);
         selected = none;
-        turnOffButtons();
+        layout_selected.setVisibility(View.INVISIBLE);
     }
 
     void load(){
@@ -508,15 +514,5 @@ public class MainActivity extends AppCompatActivity{
         Intent intent = new Intent(MainActivity.this, MainActivity2.class);
         startActivity(intent);
         finish();
-    }
-
-    void turnOnButtons(){
-        button_decide.setBackgroundColor(Color.rgb(100, 0, 255));
-        button_delete_work.setBackgroundColor(Color.rgb(255, 50, 50));
-    }
-
-    void turnOffButtons(){
-        button_decide.setBackgroundColor(Color.rgb(150, 150, 150));
-        button_delete_work.setBackgroundColor(Color.rgb(150, 150, 150));
     }
 }

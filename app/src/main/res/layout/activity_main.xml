@@ -335,11 +335,19 @@
                 android:gravity="bottom"
                 android:orientation="vertical">
 
+                <Button
+                    android:id="@+id/button_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="preview"
+                    app:backgroundTint="#FF5722" />
+
                 <EditText
                     android:id="@+id/et_delete_num"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
+                    android:hint="delete:"
                     android:inputType="number" />
 
                 <Button
@@ -353,6 +361,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
+                    android:hint="exchange:"
                     android:inputType="number" />
 
                 <EditText
@@ -360,6 +369,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
+                    android:hint="exchange:"
                     android:inputType="number" />
 
                 <Button
@@ -381,6 +391,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="new" />
+
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
