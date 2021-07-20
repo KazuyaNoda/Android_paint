@@ -2,742 +2,506 @@ package com.example.y3033113.saishu;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Locale;
+import java.util.List;
 
-import static java.lang.String.format;
+public class MainActivity extends AppCompatActivity{
 
+    final Byte mode_title = 0;
+    final Byte mode_gallery = 1;
+    final Byte mode_check = 2;
 
-// レイアウトなどを記述したメインクラス
-public class MainActivity extends AppCompatActivity {
-    final byte mode_draw = 0;
-    final byte mode_mode = 1;
-    final byte mode_color = 2;
-    final byte mode_tool = 3;
-    final byte mode_layer = 4;
-    final byte mode_output = 5;
-    final byte mode_expand = 6;
+    Byte mode = mode_title;
 
-    byte viewmode = mode_draw;
+    LinearLayout layout_gallery;
+    LinearLayout layout_work1;
+    LinearLayout layout_work2;
+    LinearLayout layout_work3;
+    LinearLayout layout_work4;
+    LinearLayout layout_work5;
+    LinearLayout layout_work6;
+    LinearLayout layout_check;
 
-    LinearLayout layout_mode;
-    LinearLayout layout_color;
-    LinearLayout layout_tool;
-    LinearLayout layout_layer;
-    LinearLayout layout_output;
-    LinearLayout layout_reshape;
+    LinearLayout[] layout_works = new LinearLayout[6];
 
-    Button button_redo;
-    Button button_undo;
+    TextView text_title;
+    TextView text_work1;
+    TextView text_work2;
+    TextView text_work3;
+    TextView text_work4;
+    TextView text_work5;
+    TextView text_work6;
 
-    Button button_mode;
-    Button button_color;
-    Button button_tool;
-    Button button_layer;
-    Button button_output;
+    TextView[] text_works = new TextView[6];
 
-    Button button_Line;         // 線を引くモードに変更させるボタン
-    Button button_fillRect;     // 塗りつぶしあり四角形を描くモードに変更させるボタン
-    Button button_Rect;         // 塗りつぶしなし四角形を描くモードに変更させるボタン
-    Button button_fillOval;     // 塗りつぶしあり楕円を描くモードに変更させるボタン
-    Button button_Oval;         // 塗りつぶしなし楕円を描くモードに変更させるボタン
-    Button button_clip;
-    Button button_clipreset;
-    Button button_eraser;
+    ImageView image_work1;
+    ImageView image_work2;
+    ImageView image_work3;
+    ImageView image_work4;
+    ImageView image_work5;
+    ImageView image_work6;
 
-    Button button_red;
-    Button button_green;
-    Button button_blue;
-    Button button_cyan;
-    Button button_magenta;
-    Button button_yellow;
-    Button button_black;
-    Button button_white;
+    ImageView[] image_works = new ImageView[6];
 
-    Button button_ac;           // allclear機能を持たせるボタン
-    Button button_reshape;
+    Button button_gallery_up;
+    Button button_gallery_down;
+    Button button_back;
+    Button button_decide;
+    Button button_delete_work;
+    Button button_add_work;
 
-    Button button_reshape_ok;
-    Button button_reshape_no;
-    Button button_expand;
-    Button button_slide;
+    Button button_check_delete;
+    Button button_check_cancel;
 
-    Button button_add_layer;
-    Button button_change_layer;
-    Button button_exchange_layer;
-    Button button_close;
+    List<Bitmap> bitmap_works = new ArrayList<>();
+    int showingWork = 0;
 
+    final int none = -1;
+    int selected = none;
 
-    TextView text_R;            // RGBのうちRの値を表示するTextView
-    TextView text_G;            // RGBのうちGの値を表示するTextView
-    TextView text_B;            // RGBのうちBの値を表示するTextView
-    TextView text_alpha;        // 不透明度を表示するTextView
-    TextView text_seekBar_thick;
-    TextView text_currentLayer;
-
-    EditText et_number;
-    EditText et_index_a;
-    EditText et_index_b;
-
-    static SeekBar seekBar_R;       // RGBのうちRの値を入力するSeekBar
-    static SeekBar seekBar_G;       // RGBのうちGの値を入力するSeekBar
-    static SeekBar seekBar_B;       // RGBのうちBの値を入力するSeekBar
-    static SeekBar seekBar_alpha;   // 不透明度の値を入力するSeekBar
-    static SeekBar seekBar_thick;
-
-    static int value_R = 0;         // RGBのうちRの値を格納する変数
-    static int value_G = 0;         // RGBのうちGの値を格納する変数
-    static int value_B = 0;         // RGBのうちBの値を格納する変数
-    static int value_alpha = 255;   // 不透明度の値を格納する変数
-
-    String s_number;
-    int index;
-    int index_a;
-    int index_b;
-    static int thick = 10;
-    static int color = Color.BLACK;
-
+    int gallerySize = 0;
+    int newWork = 0;
+    static int workNum = 0;
+    static String filePath;// filePath = Integer.toString(workNum);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);                 // activity_main.xmlを表示
-        MyView.layers.add(new ArrayList<Structure>(64));
+        setContentView(R.layout.activity_main2);
 
-        // LinerLayoutの設定
-        layout_mode = (LinearLayout)findViewById(R.id.mode);
-        layout_color = (LinearLayout)findViewById(R.id.color);
-        layout_tool = (LinearLayout)findViewById(R.id.tool);
-        layout_layer = (LinearLayout)findViewById(R.id.layer);
-        layout_output = (LinearLayout)findViewById(R.id.output);
-        layout_reshape = (LinearLayout)findViewById(R.id.layout_reshape);
+        layout_gallery = (LinearLayout)findViewById(R.id.layout_gallery);
+        layout_work1 = (LinearLayout)findViewById(R.id.layout_work1);
+        layout_work2 = (LinearLayout)findViewById(R.id.layout_work2);
+        layout_work3 = (LinearLayout)findViewById(R.id.layout_work3);
+        layout_work4 = (LinearLayout)findViewById(R.id.layout_work4);
+        layout_work5 = (LinearLayout)findViewById(R.id.layout_work5);
+        layout_work6 = (LinearLayout)findViewById(R.id.layout_work6);
+        layout_check = (LinearLayout)findViewById(R.id.layout_check);
 
-        // TextViewの設定
-        text_R = (TextView)findViewById(R.id.textView_R);
-        text_G = (TextView)findViewById(R.id.textView_G);
-        text_B = (TextView)findViewById(R.id.textView_B);
-        text_alpha = (TextView)findViewById(R.id.textView_alpha);
-        text_seekBar_thick = (TextView)findViewById(R.id.text_seekBar_thick);
-        text_currentLayer = (TextView)findViewById(R.id.text_currentLayer);
+        layout_works[0] = layout_work1;
+        layout_works[1] = layout_work2;
+        layout_works[2] = layout_work3;
+        layout_works[3] = layout_work4;
+        layout_works[4] = layout_work5;
+        layout_works[5] = layout_work6;
 
-        et_number = (EditText)findViewById(R.id.editTextNumber);
-        et_number.setText("1");
+        text_title = (TextView)findViewById(R.id.text_title);
+        text_work1 = (TextView)findViewById(R.id.text_work1);
+        text_work2 = (TextView)findViewById(R.id.text_work2);
+        text_work3 = (TextView)findViewById(R.id.text_work3);
+        text_work4 = (TextView)findViewById(R.id.text_work4);
+        text_work5 = (TextView)findViewById(R.id.text_work5);
+        text_work6 = (TextView)findViewById(R.id.text_work6);
 
-        et_index_a = (EditText)findViewById(R.id.et_index_a);
-        et_index_b = (EditText)findViewById(R.id.et_index_b);
+        text_works[0] = text_work1;
+        text_works[1] = text_work2;
+        text_works[2] = text_work3;
+        text_works[3] = text_work4;
+        text_works[4] = text_work5;
+        text_works[5] = text_work6;
 
-        // seekBarの設定
-        seekBar_R = (SeekBar)findViewById(R.id.seekBar_R);
-        seekBar_G = (SeekBar)findViewById(R.id.seekBar_G);
-        seekBar_B = (SeekBar)findViewById(R.id.seekBar_B);
-        seekBar_alpha = (SeekBar)findViewById(R.id.seekBar_alpha);
-        seekBar_thick = (SeekBar)findViewById(R.id.seekBar_thick);
+        image_work1 = (ImageView)findViewById(R.id.image_work1);
+        image_work2 = (ImageView)findViewById(R.id.image_work2);
+        image_work3 = (ImageView)findViewById(R.id.image_work3);
+        image_work4 = (ImageView)findViewById(R.id.image_work4);
+        image_work5 = (ImageView)findViewById(R.id.image_work5);
+        image_work6 = (ImageView)findViewById(R.id.image_work6);
 
-        // seekBarの最大値を設定
-        seekBar_R.setMax(255);
-        seekBar_G.setMax(255);
-        seekBar_B.setMax(255);
-        seekBar_alpha.setMax(255);
-        seekBar_thick.setMax(15);
+        image_works[0] = image_work1;
+        image_works[1] = image_work2;
+        image_works[2] = image_work3;
+        image_works[3] = image_work4;
+        image_works[4] = image_work5;
+        image_works[5] = image_work6;
 
-        // seekBarの初期値を設定
-        seekBar_R.setProgress(0);
-        seekBar_G.setProgress(0);
-        seekBar_B.setProgress(0);
-        seekBar_alpha.setProgress(255);
-        seekBar_thick.setProgress(5);
-
-        // seekBarのリスナ登録,イベント処理
-        seekBar_R.setOnSeekBarChangeListener(
-                new SeekBar.OnSeekBarChangeListener(){
-
-                    // ツマミがドラッグされたとき
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        value_R = progress;                                                 // 各valueに各seekBarの値を格納
-                        String str = format("R: %d", progress);                       // TextViewに表示する文字列を編集
-                        text_R.setText(str);                                               // Textviewに表示
-                    }
-
-                    // ツマミがタッチされたとき
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                    }
-
-                    // ツマミが離されたとき
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                        color = Color.argb(value_alpha, value_R, value_G, value_B);
-                    }
-                });
-
-        seekBar_G.setOnSeekBarChangeListener(
-                new SeekBar.OnSeekBarChangeListener(){
-
-                    // ツマミがドラッグされたとき
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        value_G = progress;
-                        String str = format("G: %d", progress);
-                        text_G.setText(str);
-                    }
-
-                    // ツマミがタッチされたとき
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                    }
-
-                    // ツマミが離されたとき
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                        color = Color.argb(value_alpha, value_R, value_G, value_B);
-                    }
-                });
-
-        seekBar_B.setOnSeekBarChangeListener(
-                new SeekBar.OnSeekBarChangeListener(){
-
-                    // ツマミがドラッグされたとき
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        value_B = progress;
-                        String str = format("B: %d", progress);
-                        text_B.setText(str);
-                    }
-
-                    // ツマミがタッチされたとき
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                    }
-
-                    // ツマミが離されたとき
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                        color = Color.argb(value_alpha, value_R, value_G, value_B);
-                    }
-                });
-
-        seekBar_alpha.setOnSeekBarChangeListener(
-                new SeekBar.OnSeekBarChangeListener(){
-
-                    // ツマミがドラッグされたとき
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        value_alpha = progress;
-                        String str = format("alpha: %d", progress);
-                        text_alpha.setText(str);
-                    }
-
-                    // ツマミがタッチされたとき
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                    }
-
-                    // ツマミが離されたとき
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                        color = Color.argb(value_alpha, value_R, value_G, value_B);
-                    }
-                });
-
-        seekBar_thick.setOnSeekBarChangeListener(
-                new SeekBar.OnSeekBarChangeListener(){
-
-                    // ツマミがドラッグされたとき
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        thick = progress;
-                        String str = Integer.toString(thick);
-                        text_seekBar_thick.setText(str);
-                    }
-
-                    // ツマミがタッチされたとき
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                    }
-
-                    // ツマミが離されたとき
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                    }
-                });
-
-        // Buttonの設定
-        button_close = (Button)findViewById(R.id.button_close);
-        button_redo = (Button)findViewById(R.id.button_redo);
-        button_undo = (Button)findViewById(R.id.button_undo);
-
-        button_mode = (Button)findViewById(R.id.button_mode);
-        button_color = (Button)findViewById(R.id.button_color);
-        button_tool = (Button)findViewById(R.id.button_tool);
-        button_layer = (Button)findViewById(R.id.button_layer);
-        button_output = (Button)findViewById(R.id.button_output);
-
-        button_Line = (Button)findViewById(R.id.button_Line);
-        button_fillRect = (Button)findViewById(R.id.button_fillRect);
-        button_Rect = (Button)findViewById(R.id.button_Rect);
-        button_fillOval = (Button)findViewById(R.id.button_fillOval);
-        button_Oval = (Button)findViewById(R.id.button_Oval);
-        button_clip = (Button)findViewById(R.id.button_clip);
-        button_clipreset = (Button)findViewById(R.id.button_clipreset);
-        button_eraser = (Button)findViewById(R.id.button_eraser);
-
-        button_red = (Button)findViewById(R.id.button_red);
-        button_green = (Button)findViewById(R.id.button_green);
-        button_blue = (Button)findViewById(R.id.button_blue);
-        button_cyan = (Button)findViewById(R.id.button_cyan);
-        button_magenta = (Button)findViewById(R.id.button_magenta);
-        button_yellow = (Button)findViewById(R.id.button_yellow);
-        button_black = (Button)findViewById(R.id.button_black);
-        button_white = (Button)findViewById(R.id.button_white);
-
-        button_ac = (Button)findViewById(R.id.button_ac);
-        button_reshape = (Button)findViewById(R.id.button_reshape);
-
-        button_reshape_ok = (Button)findViewById(R.id.button_reshape_ok);
-        button_reshape_no = (Button)findViewById(R.id.button_reshape_no);
-        button_expand = (Button)findViewById(R.id.button_expand);
-        button_slide = (Button)findViewById(R.id.button_slide);
-
-        button_add_layer = (Button)findViewById(R.id.button_add_layer);
-        button_change_layer = (Button)findViewById(R.id.button_change_layer);
-        button_exchange_layer = (Button)findViewById(R.id.button_exchange_layer);
-
-        // Buttonのリスナ登録, イベント処理
-        button_ac.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
+        image_work1.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                MyView.AllClear();  // 画面を白に塗りつぶす(MyView.javaのメソッド)
-                close_button();
-            }
-        });
-
-        button_redo.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
-            @Override
-            public void onClick(View v) {
-                if(viewmode == mode_draw){
-                    MyView.Redo();
-                }
-            }
-        });
-
-        button_undo.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
-            @Override
-            public void onClick(View v) {
-                if(viewmode == mode_draw){
-                    MyView.Undo();
-                }
-            }
-        });
-
-        button_Line.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
-            @Override
-            public void onClick(View v) {
-                MyView.mode = MyView.mode_Line;     // 線を引くモードにする
-                button_mode.setText("~");
-                close_button();
-            }
-        });
-
-        button_fillRect.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
-            @Override
-            public void onClick(View v) {
-                MyView.mode = MyView.mode_fillRect; // 塗りつぶしあり四角形を描くモードにする
-                button_mode.setText("■");
-                close_button();
-            }
-        });
-
-        button_Rect.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
-            @Override
-            public void onClick(View v) {
-                MyView.mode = MyView.mode_Rect;     // 塗りつぶしなし四角形を描くモードにする
-                button_mode.setText("□");
-                close_button();
-            }
-        });
-
-        button_fillOval.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
-            @Override
-            public void onClick(View v) {
-                MyView.mode = MyView.mode_fillOval; // 塗りつぶしあり楕円を描くモードにする
-                button_mode.setText("●");
-                close_button();
-            }
-        });
-
-        button_Oval.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
-            @Override
-            public void onClick(View v) {
-                MyView.mode = MyView.mode_Oval;     // 塗りつぶしなし楕円を描くモードにする
-                button_mode.setText("◯");
-                close_button();
-            }
-        });
-
-        button_clip.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                MyView.mode = MyView.mode_clip;
-                button_mode.setText("c");
-                close_button();
-            }
-        });
-
-        button_clipreset.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                MyView.clipReset();
-                close_button();
-            }
-        });
-
-        button_eraser.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                color = Color.TRANSPARENT;
-
-                close_button();
-                button_color.setText("era");
-            }
-        });
-
-        button_mode.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
-            @Override
-            public void onClick(View v) {
-                close_button();
-                if(viewmode == mode_mode){
-                    close_button();
-                }
-                else{
-                    viewmode = mode_mode;
-                    layout_mode.setVisibility(View.VISIBLE);
-                    button_close.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-        button_color.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
-            @Override
-            public void onClick(View v) {
-                close_button();
-                if(viewmode == mode_color){
-                    close_button();
-                }
-                else{
-                    viewmode = mode_color;
-                    layout_color.setVisibility(View.VISIBLE);
-                    button_close.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-        button_tool.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
-            @Override
-            public void onClick(View v) {
-                close_button();
-                if(viewmode == mode_tool){
-                    close_button();
-                }
-                else{
-                    viewmode = mode_tool;
-                    layout_tool.setVisibility(View.VISIBLE);
-                    button_close.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-        button_layer.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
-            @Override
-            public void onClick(View v) {
-                close_button();
-                if(viewmode == mode_layer){
-                    close_button();
-                }
-                else{
-                    viewmode = mode_layer;
-                    layout_layer.setVisibility(View.VISIBLE);
-                    button_close.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-        button_output.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
-            @Override
-            public void onClick(View v) {
-                close_button();
-                if(viewmode == mode_output){
-                    close_button();
-                }
-                else{
-                    viewmode = mode_output;
-                    layout_output.setVisibility(View.VISIBLE);
-                    button_close.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-        button_add_layer.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
-            @Override
-            public void onClick(View v) {
-                MyView.layers.add(MyView.currentLayer + 1, new ArrayList<>(64));
-                MyView.bitmap.add(MyView.currentLayer + 1, Bitmap.createBitmap(MyView.width, MyView.height, Bitmap.Config.ARGB_8888));
-                MyView.canvas_bm.add(MyView.currentLayer + 1, new Canvas(MyView.bitmap.get(MyView.currentLayer + 1)));
-                et_number.setText(String.format("%d", MyView.currentLayer + 2));
-                Toast.makeText(MainActivity.this, "add new layer", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        button_change_layer.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
-            @Override
-            public void onClick(View v) {
-                s_number = et_number.getText().toString();
-                index = Integer.valueOf(s_number) - 1;
-
-                if(MyView.layers.size() > index){
-                    MyView.currentLayer = index;
-                    text_currentLayer.setText(String.format("currentLayer: %d/%d", MyView.currentLayer+1, MyView.layers.size()));
-
-                    viewmode = mode_draw;
-                    layout_layer.setVisibility(View.INVISIBLE);
-                    button_close.setVisibility(View.INVISIBLE);
-                }
-                else{
-                    et_number.setText(String.format("%d以下の数字を入力", MyView.layers.size()-1));
-                }
-            }
-        });
-
-        button_exchange_layer.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
-            @Override
-            public void onClick(View v) {
-                s_number = et_index_a.getText().toString();
-                index_a = Integer.valueOf(s_number) - 1;
-
-                s_number = et_index_b.getText().toString();
-                index_b = Integer.valueOf(s_number) - 1;
-
-                if(MyView.layers.size() > index_a){
-                    if(MyView.layers.size() > index_b){
-                        MyView.exchangeLayers(index_a, index_b);
-                        Toast.makeText(MainActivity.this, "success", Toast.LENGTH_SHORT).show();
+                if(mode == mode_gallery){
+                    if(selected == showingWork){
+                        turnOffButtons();
+                        selected = none;
                     }
                     else{
-                        et_index_b.setText(String.format("%d以下の数字を入力", MyView.layers.size()-1));
+                        turnOnButtons();
+                        selected = showingWork;
                     }
                 }
-                else{
-                    et_index_a.setText(String.format("%d以下の数字を入力", MyView.layers.size()-1));
+            }
+        });
+
+        image_work2.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if(mode == mode_gallery){
+                    if(selected == showingWork+1){
+                        turnOffButtons();
+                        selected = none;
+                    }
+                    else{
+                        turnOnButtons();
+                        selected = showingWork+1;
+                    }
                 }
             }
         });
 
-        button_reshape.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
+        image_work3.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                viewmode = mode_expand;
-                ReshapeView.expand();
-                layout_reshape.setVisibility(View.VISIBLE);
-                button_close.setVisibility(View.INVISIBLE);
-                layout_tool.setVisibility(View.INVISIBLE);
+                if(mode == mode_gallery){
+                    if(selected == showingWork+2){
+                        turnOffButtons();
+                        selected = none;
+                    }
+                    else{
+                        turnOnButtons();
+                        selected = showingWork+2;
+                    }
+                }
             }
         });
 
-        button_reshape_ok.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
+        image_work4.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                MyView.keptlist = MyView.layers.get(MyView.currentLayer);
-                MyView.layers.set(MyView.currentLayer, new ArrayList<>());
-                MyView.layers.get(MyView.currentLayer).add(new Structure(null, 0, MyView.mode_bitmap, 0, null, false, ReshapeView.bm_reshaped));
-
-                MyView.myDraw();
-                ReshapeView.end();
-                viewmode = mode_draw;
-                layout_reshape.setVisibility(View.INVISIBLE);
+                if(mode == mode_gallery){
+                    if(selected == showingWork+3){
+                        turnOffButtons();
+                        selected = none;
+                    }
+                    else{
+                        turnOnButtons();
+                        selected = showingWork+3;
+                    }
+                }
             }
         });
 
-        button_reshape_no.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
+        image_work5.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                ReshapeView.end();
-                MyView.myDraw();
-                viewmode = mode_draw;
-                layout_reshape.setVisibility(View.INVISIBLE);
+                if(mode == mode_gallery){
+                    if(selected == showingWork+4){
+                        turnOffButtons();
+                        selected = none;
+                    }
+                    else{
+                        turnOnButtons();
+                        selected = showingWork+4;
+                    }
+                }
             }
         });
 
-        button_expand.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
+        image_work6.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                button_expand.setBackgroundColor(Color.rgb(33, 150, 243));
-                button_slide.setBackgroundColor(Color.rgb(73, 190, 255));
-                ReshapeView.expand();
+                if(mode == mode_gallery){
+                    if(selected == showingWork+5){
+                        turnOffButtons();
+                        selected = none;
+                    }
+                    else{
+                        turnOnButtons();
+                        selected = showingWork+5;
+                    }
+                }
             }
         });
 
-        button_slide.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
+        button_gallery_up = (Button)findViewById(R.id.button_gallery_up);
+        button_gallery_down = (Button)findViewById(R.id.button_gallery_down);
+        button_back = (Button)findViewById(R.id.button_back);
+        button_decide = (Button)findViewById(R.id.button_decide);
+        button_delete_work = (Button)findViewById(R.id.button_delete_work);
+        button_add_work = (Button)findViewById(R.id.button_add_work);
+        button_check_delete = (Button)findViewById(R.id.button_check_delete);
+        button_check_cancel = (Button)findViewById(R.id.button_check_cancel);
+
+        button_gallery_up.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                button_slide.setBackgroundColor(Color.rgb(33, 150, 243));
-                button_expand.setBackgroundColor(Color.rgb(73, 190, 255));
-                ReshapeView.slide();
+                if(mode == mode_gallery){
+                    if(showingWork > 0){
+                        showingWork -= 1;
+                        renew();
+                    }
+                }
             }
         });
 
-        button_close.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
+        button_gallery_down.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                close_button();
+                if(mode == mode_gallery){
+                    if(bitmap_works.size() > showingWork + 5){
+                        showingWork += 1;
+                        renew();
+                    }
+                }
             }
         });
 
-        button_red.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
+        button_back.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                color = Color.RED;
-                setColor(255, 0, 0);
+                if(mode==mode_gallery){
+                    toTitle();
+                }
             }
         });
 
-        button_green.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
+        button_decide.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                color = Color.GREEN;
-                setColor(0, 255, 0);
+                if(mode == mode_gallery){
+                    if(selected != none){
+                        setupWork();
+                        startWork();
+                    }
+                }
             }
         });
 
-        button_blue.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
+        button_delete_work.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                color = Color.BLUE;
-                setColor(0, 0, 255);
+                if(mode == mode_gallery){
+                    if(selected != none){
+                        layout_check.setVisibility(View.VISIBLE);
+                        mode = mode_check;
+                    }
+                }
             }
         });
 
-        button_cyan.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
+        button_add_work.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                color = Color.CYAN;
-                setColor(0, 255, 255);
+                if(mode == mode_gallery){
+                    workNum = gallerySize;
+                    filePath = "work" + Integer.toString(workNum);
+                    MyView.layers = new ArrayList<>(10);
+                    MyView.layers.add(new ArrayList<Structure>(64));
+                    startWork();
+                }
             }
         });
 
-        button_magenta.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
+        button_check_delete.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                color = Color.MAGENTA;
-                setColor(255, 0, 255);
+                deleteWork();
+                mode = mode_gallery;
+                layout_check.setVisibility(View.INVISIBLE);
             }
         });
 
-        button_yellow.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
+        button_check_cancel.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                color = Color.YELLOW;
-                setColor(255, 255, 0);
-            }
-        });
-
-        button_black.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
-            @Override
-            public void onClick(View v) {
-                color = Color.BLACK;
-                setColor(0, 0, 0);
-            }
-        });
-
-        button_white.setOnClickListener(new View.OnClickListener(){
-            // 押されたとき
-            @Override
-            public void onClick(View v) {
-                color = Color.WHITE;
-                setColor(255, 255, 255);
+                mode = mode_gallery;
+                layout_check.setVisibility(View.INVISIBLE);
             }
         });
     }
 
-    void setColor(int r, int g, int b){
-        seekBar_R.setProgress(r);
-        seekBar_G.setProgress(g);
-        seekBar_B.setProgress(b);
-        String str_R = format("R: %d", r);
-        String str_G = format("R: %d", g);
-        String str_B = format("R: %d", b);
-        text_R.setText(str_R);
-        text_G.setText(str_G);
-        text_B.setText(str_B);
-        layout_color.setVisibility(View.INVISIBLE);
-        button_close.setVisibility(View.INVISIBLE);
-        button_color.setBackgroundColor(color);
-        button_color.setText("");
-        viewmode = mode_draw;
+    public boolean onTouchEvent(MotionEvent event){
+        switch(event.getAction()){
+            case MotionEvent.ACTION_DOWN:
+                break;
+            case MotionEvent.ACTION_UP:
+                if(mode == mode_title){
+                    toGallery();
+                }
+                break;
+            case MotionEvent.ACTION_MOVE:
+                break;
+        }
+        return mode==mode_title;
     }
 
-    void close_button(){
-        switch(viewmode){
-            case mode_mode:
-                layout_mode.setVisibility(View.INVISIBLE);
-                break;
-            case mode_color:
-                layout_color.setVisibility(View.INVISIBLE);
-                button_color.setBackgroundColor(color);
-                button_color.setText("");
-                break;
-            case mode_tool:
-                layout_tool.setVisibility(View.INVISIBLE);
-                break;
-            case mode_layer:
-                layout_layer.setVisibility(View.INVISIBLE);
-                break;
-            case mode_output:
-                layout_output.setVisibility(View.INVISIBLE);
-                break;
+    void toGallery(){
+        mode = mode_gallery;
+        text_title.setVisibility(View.INVISIBLE);
+        //image_title.setVisibility(View.INVISIBLE);
+        layout_gallery.setVisibility(View.VISIBLE);
+
+        road();
+        renew();
+    }
+
+    void toTitle(){
+        mode = mode_title;
+        text_title.setVisibility(View.VISIBLE);
+        //image_title.setVisibility(View.VISIBLE);
+        layout_gallery.setVisibility(View.INVISIBLE);
+
+        bitmap_works = new ArrayList<>(10);
+        selected = none;
+        turnOffButtons();
+    }
+
+    void road(){
+        int i = 1;
+        try{
+            while(true){
+                String name = "work" + Integer.toString(i);
+                File workFile = new File(getApplicationContext().getFilesDir(), name + ".txt");
+                if(!workFile.exists()){
+                    break;
+                }
+                i++;
+            }
+        }catch(Exception e){
+            e.printStackTrace();
         }
-        viewmode = mode_draw;
-        if(button_close.getVisibility() == View.VISIBLE){
-            button_close.setVisibility(View.INVISIBLE);
+
+        gallerySize = i;
+        newWork = i;
+        System.out.println(i);
+        String[] widthArray = new String[gallerySize-1];
+        String[] heightArray = new String[gallerySize-1];
+        try{
+            for(int j=0; j<gallerySize-1; j++){
+                String name = "work" + Integer.toString(j+1);
+                File file = new File(getApplicationContext().getFilesDir(), name + ".txt");
+                FileInputStream input = new FileInputStream(file);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(input, "UTF-8"));
+                widthArray[j] = reader.readLine();
+                heightArray[j] = reader.readLine();
+            }
+        }catch(Exception e){
+            e.printStackTrace();
         }
+
+        try{
+            for(int j=0; j<gallerySize-1; j++){
+                String name = "work" + Integer.toString(j+1);
+                File file = new File(getApplicationContext().getFilesDir(), name + ".png");
+                FileInputStream input = new FileInputStream(file);
+                bitmap_works.add(bitmap_works.size(), BitmapFactory.decodeStream(input));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void renew(){
+        for(int i=0; i<layout_works.length; i++){
+            if(bitmap_works.size() <= i){
+                layout_works[i].setVisibility(View.INVISIBLE);
+            }
+            else{
+                layout_works[i].setVisibility(View.VISIBLE);
+                image_works[i].setImageBitmap((bitmap_works.get(showingWork+i)));
+                text_works[i].setText(Integer.toString(showingWork+i+1));
+            }
+        }
+
+        if(showingWork <= 0){
+            button_gallery_up.setBackgroundColor(Color.rgb(150, 150, 150));
+        }
+        else{
+            button_gallery_up.setBackgroundColor(Color.rgb(100, 0, 255));
+        }
+        if(bitmap_works.size() <= showingWork + 5){
+            button_gallery_down.setBackgroundColor(Color.rgb(150, 150, 150));
+        }
+        else{
+            button_gallery_down.setBackgroundColor(Color.rgb(100, 0, 255));
+        }
+    }
+
+    void setupWork(){
+        filePath = "work" + Integer.toString(selected + 1);
+        String tmp;
+        List<String> in = new ArrayList<>();
+
+        try{
+            File file = new File(getApplicationContext().getFilesDir(), filePath + ".txt");
+            FileInputStream input = new FileInputStream(file);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(input, "UTF-8"));
+            while( (tmp = reader.readLine()) != null ){
+                in.add(in.size(), tmp);
+            }
+            reader.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        int width = Integer.valueOf(in.get(0));
+        int height = Integer.valueOf(in.get(1));
+        int layerNum = Integer.valueOf(in.get(2));
+        int invisibleNum = Integer.valueOf(in.get(3));
+        for(int i=0; i<invisibleNum; i++){
+            MyView.invisible.add(in.get(3+1+i));
+        }
+
+        Bitmap[] images = new Bitmap[layerNum];
+
+        try{
+            for(int i=0; i<layerNum; i++){
+                File file = new File(getApplicationContext().getFilesDir(), filePath + "_" + Integer.toString(i+1) + ".png");
+                FileInputStream input = new FileInputStream(file);
+                images[i] = BitmapFactory.decodeStream(input);
+                input.close();
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        MyView.layers = new ArrayList<>(10);
+        for(int i=0; i<layerNum; i++){
+            MyView.layers.add(MyView.layers.size(), new ArrayList<Structure>(64));
+            MyView.layers.get(i).add(new Structure(null, 0, MyView.mode_bitmap, 0, null, false, images[i]));
+        }
+    }
+
+    void deleteWork(){
+        filePath = "work" + Integer.toString(workNum);
+        try{
+            File file = new File(getApplicationContext().getFilesDir(), filePath + ".txt");
+            file.delete();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    void startWork(){
+        Intent intent = new Intent(MainActivity.this, MainActivity2.class);
+        startActivity(intent);
+        finish();
+    }
+
+    void turnOnButtons(){
+        button_decide.setBackgroundColor(Color.rgb(100, 0, 255));
+        button_delete_work.setBackgroundColor(Color.rgb(255, 50, 50));
+    }
+
+    void turnOffButtons(){
+        button_decide.setBackgroundColor(Color.rgb(150, 150, 150));
+        button_delete_work.setBackgroundColor(Color.rgb(150, 150, 150));
     }
 }

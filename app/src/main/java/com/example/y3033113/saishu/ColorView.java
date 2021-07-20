@@ -21,7 +21,7 @@ public class ColorView extends View {
         super.onDraw(canvas);
         Paint paint = new Paint();
         // 入力されたARGBの値から色を定義し、塗りつぶしあり四角形で表示
-        paint.setColor(Color.argb(com.example.y3033113.saishu.MainActivity.value_alpha, com.example.y3033113.saishu.MainActivity.value_R, com.example.y3033113.saishu.MainActivity.value_G, com.example.y3033113.saishu.MainActivity.value_B));
+        paint.setColor(Color.argb(com.example.y3033113.saishu.MainActivity2.value_alpha, com.example.y3033113.saishu.MainActivity2.value_R, com.example.y3033113.saishu.MainActivity2.value_G, com.example.y3033113.saishu.MainActivity2.value_B));
         canvas.drawRect(0, 0, 250, 250, paint);
 
         invalidate();  // 再描画

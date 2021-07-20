@@ -60,9 +60,9 @@ public class GhostView extends View {
             canvas_sub.drawPath(MyView.path, paint);
         }
 
-        paint.setStrokeWidth(MainActivity.thick);            // 線の太さを５に設定(将来的に変更できるようにする)
-        paint.setColor(MainActivity.color);
-        if(MainActivity.color == Color.TRANSPARENT){
+        paint.setStrokeWidth(MainActivity2.thick);            // 線の太さを５に設定(将来的に変更できるようにする)
+        paint.setColor(MainActivity2.color);
+        if(MainActivity2.color == Color.TRANSPARENT){
             paint.setColor(Color.WHITE);
         }
         if(drawghostkey) {                  // プレビュー図形を描画できるとき

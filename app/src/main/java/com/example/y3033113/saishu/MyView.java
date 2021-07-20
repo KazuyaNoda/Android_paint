@@ -49,6 +49,7 @@ public class MyView extends View {
     static byte mode = mode_Line;            // 描画モードを格納する変数
     static Path path = new Path();
 
+    static boolean drawing = true;
     static boolean moving = false;
     static boolean cliping = false;
 
@@ -60,9 +61,10 @@ public class MyView extends View {
     static List<Bitmap> bitmap = new ArrayList<>(10);
     static List<Canvas> canvas_bm = new ArrayList<>(10);
     static List<List<Structure>> layers = new ArrayList<>(10);
+    static List<String> invisible = new ArrayList<>(10);
+
 
     static int currentLayer = 0;
-
 
 
     public MyView(Context context){
@@ -81,16 +83,30 @@ public class MyView extends View {
             paint = new Paint();                    // paintを宣言
             height = canvas.getHeight();
             width = canvas.getWidth();
-            bitmap.add(Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888));   // bitmapをcanvasにあわせてつくる
-            canvas_bm.add(new Canvas(bitmap.get(0)));
         }
+        if(canvas_bm.size() == 0){
+            Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            bitmap.add(0, bmp);
+            canvas_bm.add(0, new Canvas(bitmap.get(0)));
+        }
+        if(canvas_bm.size() != layers.size()){
+            while(canvas_bm.size() != layers.size()){
+                Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+                bitmap.add(canvas_bm.size(), bmp);
+                canvas_bm.add(canvas_bm.size(), new Canvas(bitmap.get(canvas_bm.size()-1)));
+            }
+        }
+        System.out.println(String.format("myDrawの前 : %d", layers.size()));
 
         myDraw();
 
         canvas.drawColor(Color.WHITE);
         for(int i=0; i<layers.size(); i++){
-            canvas.drawBitmap(bitmap.get(i), 0, 0, null);  // canvasにbitmapのイメージを描く
+            if(!invisible.contains(String.format("%d", i))){
+                canvas.drawBitmap(bitmap.get(i), 0, 0, null);  // canvasにbitmapのイメージを描く
+            }
         }
+        CopyCanvas.copy();
 
     }
 
@@ -122,8 +138,8 @@ public class MyView extends View {
                     points = new ArrayList<>();
                 }
                 else{
-                    color = MainActivity.color;
-                    thick = MainActivity.thick;
+                    color = MainActivity2.color;
+                    thick = MainActivity2.thick;
                     newdraw = new Structure(points, color, mode, thick, path, cliping, null);
                     layers.get(currentLayer).add(newdraw);
 
@@ -149,8 +165,9 @@ public class MyView extends View {
                 break;
         }
 
-        return true;
+        return drawing;
     }
+
 
     static void myDraw(){
         RectF rect;             // 楕円を描くときに用いる
@@ -159,7 +176,8 @@ public class MyView extends View {
 
         paint.setColor(Color.TRANSPARENT);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-        for(int i=1; i<layers.size(); i++){
+        System.out.println(String.format("errorの前: %d", layers.size()));
+        for(int i=0; i<layers.size(); i++){
             canvas_bm.get(i).drawRect(0, 0, width, height, paint);
         }
         paint.setXfermode(null);
@@ -284,7 +302,6 @@ public class MyView extends View {
 
     static void exchangeLayers(int index_a, int index_b){
         Collections.swap(layers, index_a, index_b);
-
         myDraw();
     }
 
