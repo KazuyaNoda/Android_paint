@@ -6,8 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -44,7 +42,7 @@ public class ReshapeView extends View {
 
     protected void onDraw(Canvas canvas){
         if(reshaping){
-            if(paint == null){
+            if(canvas_rv == null){
                 paint = new Paint();
                 paint.setColor(Color.WHITE);
                 width = MyView.width;
@@ -95,14 +93,8 @@ public class ReshapeView extends View {
                         matrix.preScale(ratio, ratio, width/2, height/2);
                     }
                     else if(sliding){
-                        dx = Math.abs(next_x - x);
-                        dy = Math.abs(next_y - y);
-                        if(x > next_x){
-                            dx = -dx;
-                        }
-                        if(y > next_y){
-                            dy = -dy;
-                        }
+                        dx = next_x - x;
+                        dy = next_y - y;
                         matrix.setTranslate(dx, dy);
                     }
                     invalidate();
@@ -127,7 +119,9 @@ public class ReshapeView extends View {
     }
 
     static void end(){
-        canvas_rv.drawRect(0, 0, width, height, paint);
+        if(canvas_rv != null){
+            canvas_rv.drawRect(0, 0, width, height, paint);
+        }
         touching_rv = false;
         expanding = false;
     }

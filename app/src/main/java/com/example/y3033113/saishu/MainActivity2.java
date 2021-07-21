@@ -63,10 +63,13 @@ public class MainActivity2 extends AppCompatActivity {
     Button button_output;
 
     Button button_Line;         // 線を引くモードに変更させるボタン
+    Button button_Line2;
     Button button_fillRect;     // 塗りつぶしあり四角形を描くモードに変更させるボタン
     Button button_Rect;         // 塗りつぶしなし四角形を描くモードに変更させるボタン
     Button button_fillOval;     // 塗りつぶしあり楕円を描くモードに変更させるボタン
     Button button_Oval;         // 塗りつぶしなし楕円を描くモードに変更させるボタン
+    Button button_fillRound;
+    Button button_Round;
     Button button_clip;
     Button button_clipreset;
     Button button_eraser;
@@ -136,9 +139,6 @@ public class MainActivity2 extends AppCompatActivity {
     static int value_B = 0;         // RGBのうちBの値を格納する変数
     static int value_alpha = 255;   // 不透明度の値を格納する変数
 
-    String s_number;
-    int index_a;
-    int index_b;
     int showingLayer = 0;
     static int thick = 10;
     static int color = Color.BLACK;
@@ -340,10 +340,13 @@ public class MainActivity2 extends AppCompatActivity {
         button_output = (Button)findViewById(R.id.button_output);
 
         button_Line = (Button)findViewById(R.id.button_Line);
+        button_Line2 = (Button)findViewById(R.id.button_Line2);
         button_fillRect = (Button)findViewById(R.id.button_fillRect);
         button_Rect = (Button)findViewById(R.id.button_Rect);
         button_fillOval = (Button)findViewById(R.id.button_fillOval);
         button_Oval = (Button)findViewById(R.id.button_Oval);
+        button_fillRound = (Button)findViewById(R.id.button_fillRound);
+        button_Round = (Button)findViewById(R.id.button_Round);
         button_clip = (Button)findViewById(R.id.button_clip);
         button_clipreset = (Button)findViewById(R.id.button_clipreset);
         button_eraser = (Button)findViewById(R.id.button_eraser);
@@ -416,6 +419,15 @@ public class MainActivity2 extends AppCompatActivity {
             }
         });
 
+        button_Line2.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                MyView.mode = MyView.mode_Line2;     // 線を引くモードにする
+                button_mode.setText("-");
+                close_button();
+            }
+        });
+
         button_fillRect.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -438,7 +450,7 @@ public class MainActivity2 extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 MyView.mode = MyView.mode_fillOval; // 塗りつぶしあり楕円を描くモードにする
-                button_mode.setText("●");
+                button_mode.setText("●da");
                 close_button();
             }
         });
@@ -447,7 +459,25 @@ public class MainActivity2 extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 MyView.mode = MyView.mode_Oval;     // 塗りつぶしなし楕円を描くモードにする
-                button_mode.setText("◯");
+                button_mode.setText("◯da");
+                close_button();
+            }
+        });
+
+        button_fillRound.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                MyView.mode = MyView.mode_fillRound;
+                button_mode.setText("●sin");
+                close_button();
+            }
+        });
+
+        button_Round.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                MyView.mode = MyView.mode_Round;
+                button_mode.setText("◯sin");
                 close_button();
             }
         });
@@ -604,23 +634,29 @@ public class MainActivity2 extends AppCompatActivity {
         button_exchange_layer.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                s_number = et_index_a.getText().toString();
-                index_a = Integer.valueOf(s_number) - 1;
+                if(et_index_a.getText() != null && et_index_b.getText() != null){
+                    String s_number;
+                    int index_a;
+                    int index_b;
 
-                s_number = et_index_b.getText().toString();
-                index_b = Integer.valueOf(s_number) - 1;
+                    s_number = et_index_a.getText().toString();
+                    index_a = Integer.valueOf(s_number) - 1;
 
-                if(MyView.layers.size() > index_a){
-                    if(MyView.layers.size() > index_b){
-                        MyView.exchangeLayers(index_a, index_b);
-                        Toast.makeText(MainActivity2.this, "success", Toast.LENGTH_SHORT).show();
+                    s_number = et_index_b.getText().toString();
+                    index_b = Integer.valueOf(s_number) - 1;
+
+                    if(MyView.layers.size() > index_a){
+                        if(MyView.layers.size() > index_b){
+                            MyView.exchangeLayers(index_a, index_b);
+                            Toast.makeText(MainActivity2.this, "success", Toast.LENGTH_SHORT).show();
+                        }
+                        else{
+                            Toast.makeText(MainActivity2.this, "too large", Toast.LENGTH_SHORT).show();
+                        }
                     }
                     else{
                         Toast.makeText(MainActivity2.this, "too large", Toast.LENGTH_SHORT).show();
                     }
-                }
-                else{
-                    Toast.makeText(MainActivity2.this, "too large", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -691,6 +727,7 @@ public class MainActivity2 extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity2.this, MainActivity3.class);
+                Toast.makeText(MainActivity2.this, "click!", Toast.LENGTH_SHORT).show();
                 startActivity(intent);
             }
         });
@@ -699,6 +736,7 @@ public class MainActivity2 extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 viewmode = mode_expand;
+                Toast.makeText(MainActivity2.this, "expand selected", Toast.LENGTH_SHORT).show();
                 ReshapeView.expand();
                 layout_reshape.setVisibility(View.VISIBLE);
                 button_close.setVisibility(View.INVISIBLE);
@@ -735,6 +773,7 @@ public class MainActivity2 extends AppCompatActivity {
             public void onClick(View v) {
                 button_expand.setBackgroundColor(Color.rgb(33, 150, 243));
                 button_slide.setBackgroundColor(Color.rgb(73, 190, 255));
+                Toast.makeText(MainActivity2.this, "expand selected", Toast.LENGTH_SHORT).show();
                 ReshapeView.expand();
             }
         });
@@ -744,6 +783,7 @@ public class MainActivity2 extends AppCompatActivity {
             public void onClick(View v) {
                 button_slide.setBackgroundColor(Color.rgb(33, 150, 243));
                 button_expand.setBackgroundColor(Color.rgb(73, 190, 255));
+                Toast.makeText(MainActivity2.this, "slide selected", Toast.LENGTH_SHORT).show();
                 ReshapeView.slide();
             }
         });

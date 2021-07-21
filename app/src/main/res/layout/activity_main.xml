@@ -84,13 +84,27 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="2dp"
                     android:layout_marginRight="2dp"
-                    android:text="~" />
+                    android:text="~"
+                    android:textSize="18sp"
+                    app:backgroundTint="#222222" />
+
+                <Button
+                    android:id="@+id/button_Line2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginRight="2dp"
+                    android:text="-"
+                    android:textSize="18sp"
+                    app:backgroundTint="#222222" />
 
                 <Button
                     android:id="@+id/button_eraser"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="eraser" />
+                    android:text="消しゴム"
+                    android:textColor="#000000"
+                    app:backgroundTint="#FFFFFF" />
 
             </TableRow>
 
@@ -112,6 +126,27 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="◯(da)" />
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <Button
+                    android:id="@+id/button_fillRound"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginRight="2dp"
+                    android:text="●(sin)" />
+
+                <Button
+                    android:id="@+id/button_Round"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="◯(sin)" />
 
             </TableRow>
 
@@ -146,13 +181,15 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="2dp"
                     android:layout_marginRight="2dp"
-                    android:text="c" />
+                    android:text="領域"
+                    app:backgroundTint="#8BC34A" />
 
                 <Button
                     android:id="@+id/button_clipreset"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="r" />
+                    android:text="取消"
+                    app:backgroundTint="#8BC34A" />
 
             </TableRow>
         </TableLayout>
@@ -601,19 +638,8 @@
             android:id="@+id/button_reshape"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="reshape" />
+            android:text="変形" />
 
-        <Button
-            android:id="@+id/button11"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="~" />
-
-        <Button
-            android:id="@+id/button12"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="~" />
     </LinearLayout>
 
     <LinearLayout

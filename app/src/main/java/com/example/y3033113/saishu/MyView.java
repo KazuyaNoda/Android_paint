@@ -38,13 +38,16 @@ public class MyView extends View {
 
     // 描画モードの定数定義
     final static byte mode_Line = 0;         // 線
-    final static byte mode_fillRect = 1;     // 塗りつぶしあり四角形
-    final static byte mode_Rect = 2;         // 塗りつぶしなし四角形
-    final static byte mode_fillOval = 3;     // 塗りつぶしあり楕円
-    final static byte mode_Oval = 4;         // 塗りつぶしなし楕円
-    final static byte mode_clip = 5;
-    final static byte mode_Eraser = 6;
-    final static byte mode_bitmap = 7;
+    final static byte mode_Line2 = 1;
+    final static byte mode_fillRect = 2;     // 塗りつぶしあり四角形
+    final static byte mode_Rect = 3;         // 塗りつぶしなし四角形
+    final static byte mode_fillOval = 4;     // 塗りつぶしあり楕円
+    final static byte mode_Oval = 5;         // 塗りつぶしなし楕円
+    final static byte mode_fillRound = 6;
+    final static byte mode_Round = 7;
+    final static byte mode_clip = 8;
+    final static byte mode_Eraser = 9;
+    final static byte mode_bitmap = 10;
 
     static byte mode = mode_Line;            // 描画モードを格納する変数
     static Path path = new Path();
@@ -201,6 +204,9 @@ public class MyView extends View {
                             canvas_bm.get(i).drawLine(drawpoints.get(k), drawpoints.get(k+1), drawpoints.get(k+2), drawpoints.get(k+3), paint);
                         }
                         break;
+                    case mode_Line2:
+                        canvas_bm.get(i).drawLine(drawpoints.get(0), drawpoints.get(1), drawpoints.get(2), drawpoints.get(3), paint);
+                        break;
                     case mode_fillRect: // 塗りつぶしあり四角形を描く
                         paint.setStyle(Paint.Style.FILL);
                         canvas_bm.get(i).drawRect(drawpoints.get(0), drawpoints.get(1), drawpoints.get(2), drawpoints.get(3), paint);
@@ -219,10 +225,18 @@ public class MyView extends View {
                         rect = new RectF(drawpoints.get(0), drawpoints.get(1), drawpoints.get(2), drawpoints.get(3));
                         canvas_bm.get(i).drawOval(rect, paint);
                         break;
-                    case mode_Eraser:
+                    case mode_fillRound:
+                        paint.setStyle(Paint.Style.FILL);
+                        canvas_bm.get(i).drawCircle(drawpoints.get(0), drawpoints.get(1), getDistance(drawpoints.get(0),drawpoints.get(1),drawpoints.get(2),drawpoints.get(3)), paint);
+                        break;
+                    case mode_Round:
+                        paint.setStyle(Paint.Style.STROKE);
+                        canvas_bm.get(i).drawCircle(drawpoints.get(0), drawpoints.get(1), getDistance(drawpoints.get(0),drawpoints.get(1),drawpoints.get(2),drawpoints.get(3)), paint);
                         break;
                     case mode_bitmap:
                         canvas_bm.get(i).drawBitmap(drawnow.bitmap, 0,0,null);
+                        break;
+                    case mode_Eraser:
                         break;
                 }
                 if(drawnow.cliping){
@@ -301,6 +315,11 @@ public class MyView extends View {
     static void exchangeLayers(int index_a, int index_b){
         Collections.swap(layers, index_a, index_b);
         myDraw();
+    }
+
+    static float getDistance(float prex, float prey, float x, float y){
+        double distance = Math.sqrt((double)((x-prex)*(x-prex) + (y-prey)*(y-prey)));
+        return (float)(distance);
     }
 
 }

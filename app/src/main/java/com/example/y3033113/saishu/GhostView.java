@@ -86,6 +86,9 @@ public class GhostView extends View {
                     canvas_sub.drawLine(points.get(i), points.get(i+1), points.get(i+2), points.get(i+3), paint);
                 }
                 break;
+            case MyView.mode_Line2:  // 塗りつぶしあり四角形を描く
+                canvas_sub.drawLine(prex, prey, ghost_x, ghost_y, paint);
+                break;
             case MyView.mode_fillRect:  // 塗りつぶしあり四角形を描く
                 paint.setStyle(Paint.Style.FILL);
                 canvas_sub.drawRect(prex, prey, ghost_x, ghost_y, paint);
@@ -103,6 +106,14 @@ public class GhostView extends View {
                 rect = new RectF(prex, prey, ghost_x, ghost_y);
                 paint.setStyle(Paint.Style.STROKE);
                 canvas_sub.drawOval(rect, paint);
+                break;
+            case MyView.mode_fillRound:      // 塗りつぶしなし楕円を描く
+                paint.setStyle(Paint.Style.FILL);
+                canvas_sub.drawCircle(prex, prey, MyView.getDistance(prex, prey, ghost_x, ghost_y), paint);
+                break;
+            case MyView.mode_Round:      // 塗りつぶしなし楕円を描く
+                paint.setStyle(Paint.Style.STROKE);
+                canvas_sub.drawCircle(prex, prey, MyView.getDistance(prex, prey, ghost_x, ghost_y), paint);
                 break;
             case MyView.mode_clip:
                 paint.setStyle(Paint.Style.STROKE);

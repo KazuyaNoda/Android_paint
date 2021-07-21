@@ -143,10 +143,12 @@ public class MainActivity extends AppCompatActivity{
                     if(selected == showingWork+1){
                         layout_selected.setVisibility(View.INVISIBLE);
                         selected = none;
+                        button_add_work.setBackgroundColor(Color.rgb(100, 0, 255));
                     }
                     else{
                         layout_selected.setVisibility(View.VISIBLE);
                         selected = showingWork+1;
+                        button_add_work.setBackgroundColor(Color.rgb(150, 150, 150));
                     }
                 }
             }
@@ -159,10 +161,12 @@ public class MainActivity extends AppCompatActivity{
                     if(selected == showingWork+2){
                         layout_selected.setVisibility(View.INVISIBLE);
                         selected = none;
+                        button_add_work.setBackgroundColor(Color.rgb(100, 0, 255));
                     }
                     else{
                         layout_selected.setVisibility(View.VISIBLE);
                         selected = showingWork+2;
+                        button_add_work.setBackgroundColor(Color.rgb(150, 150, 150));
                     }
                 }
             }
@@ -175,10 +179,12 @@ public class MainActivity extends AppCompatActivity{
                     if(selected == showingWork+3){
                         layout_selected.setVisibility(View.INVISIBLE);
                         selected = none;
+                        button_add_work.setBackgroundColor(Color.rgb(100, 0, 255));
                     }
                     else{
                         layout_selected.setVisibility(View.VISIBLE);
                         selected = showingWork+3;
+                        button_add_work.setBackgroundColor(Color.rgb(150, 150, 150));
                     }
                 }
             }
@@ -191,10 +197,12 @@ public class MainActivity extends AppCompatActivity{
                     if(selected == showingWork+4){
                         layout_selected.setVisibility(View.INVISIBLE);
                         selected = none;
+                        button_add_work.setBackgroundColor(Color.rgb(100, 0, 255));
                     }
                     else{
                         layout_selected.setVisibility(View.VISIBLE);
                         selected = showingWork+4;
+                        button_add_work.setBackgroundColor(Color.rgb(150, 150, 150));
                     }
                 }
             }
@@ -207,10 +215,12 @@ public class MainActivity extends AppCompatActivity{
                     if(selected == showingWork+5){
                         layout_selected.setVisibility(View.INVISIBLE);
                         selected = none;
+                        button_add_work.setBackgroundColor(Color.rgb(100, 0, 255));
                     }
                     else{
                         layout_selected.setVisibility(View.VISIBLE);
                         selected = showingWork+5;
+                        button_add_work.setBackgroundColor(Color.rgb(150, 150, 150));
                     }
                 }
             }
@@ -223,10 +233,12 @@ public class MainActivity extends AppCompatActivity{
                     if(selected == showingWork+5){
                         layout_selected.setVisibility(View.INVISIBLE);
                         selected = none;
+                        button_add_work.setBackgroundColor(Color.rgb(100, 0, 255));
                     }
                     else{
                         layout_selected.setVisibility(View.VISIBLE);
                         selected = showingWork+5;
+                        button_add_work.setBackgroundColor(Color.rgb(150, 150, 150));
                     }
                 }
             }
@@ -302,11 +314,13 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 if(mode == mode_gallery){
-                    workNum = gallerySize;
-                    filePath = "work" + Integer.toString(workNum);
-                    MyView.layers = new ArrayList<>(10);
-                    MyView.layers.add(new ArrayList<Structure>(64));
-                    startWork();
+                    if(selected == none){
+                        workNum = gallerySize;
+                        filePath = "work" + Integer.toString(workNum);
+                        MyView.layers = new ArrayList<>(10);
+                        MyView.layers.add(new ArrayList<Structure>(64));
+                        startWork();
+                    }
                 }
             }
         });
@@ -353,6 +367,7 @@ public class MainActivity extends AppCompatActivity{
         //image_title.setVisibility(View.INVISIBLE);
         button_add_work.setVisibility(View.VISIBLE);
         layout_gallery.setVisibility(View.VISIBLE);
+        button_add_work.setBackgroundColor(Color.rgb(100, 0, 255));
 
         load();
         renew();
