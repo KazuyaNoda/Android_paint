@@ -18,6 +18,48 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <Button
+        android:id="@+id/button_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginRight="1dp"
+        android:layout_weight="1"
+        android:text="×"
+        android:textSize="30sp"
+        android:visibility="invisible"
+        app:backgroundTint="#FF3232" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginLeft="1dp"
+        android:layout_marginTop="1dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/button_undo"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="←"
+            android:textSize="24sp" />
+
+        <Button
+            android:id="@+id/button_redo"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="→"
+            android:textSize="24sp" />
+
+    </LinearLayout>
+
     <LinearLayout
         android:id="@+id/mode"
         android:layout_width="250dp"
@@ -211,15 +253,30 @@
                 android:layout_height="match_parent">
 
                 <Button
-                    android:id="@+id/button2"
+                    android:id="@+id/button_roop_rect"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Button" />
+                    android:text="ループrect" />
+
+                <Button
+                    android:id="@+id/button_roop_round"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ループround" />
             </TableRow>
 
             <TableRow
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent">
+
+                <Button
+                    android:id="@+id/button_ac"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="All Clear"
+                    app:backgroundTint="#FF3232" />
+            </TableRow>
 
             <TableRow
                 android:layout_width="match_parent"
@@ -615,34 +672,6 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/tool"
-        android:layout_width="80dp"
-        android:layout_height="256dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="167dp"
-        android:layout_marginLeft="167dp"
-        android:layout_marginBottom="-2dp"
-        android:background="#EEEEEE"
-        android:orientation="vertical"
-        android:visibility="invisible">
-
-        <Button
-            android:id="@+id/button_ac"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="ac" />
-
-        <Button
-            android:id="@+id/button_reshape"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="変形" />
-
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/output"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -718,69 +747,27 @@
             app:backgroundTint="#000000" />
 
         <Button
-            android:id="@+id/button_tool"
+            android:id="@+id/button_reshape"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="tool" />
+            android:text="変形" />
 
         <Button
             android:id="@+id/button_layer"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="layer" />
+            android:text="レイヤ"
+            android:textSize="12sp" />
 
         <Button
             android:id="@+id/button_output"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="output" />
+            android:text="out put" />
     </LinearLayout>
-
-    <Button
-        android:id="@+id/button_undo"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="0dp"
-        android:layout_marginLeft="0dp"
-        android:layout_marginTop="0dp"
-        android:gravity="center"
-        android:text="←"
-        android:textSize="18sp" />
-
-    <Button
-        android:id="@+id/button_redo"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="1dp"
-        android:layout_marginLeft="1dp"
-        android:layout_marginTop="0dp"
-        android:layout_toEndOf="@+id/button_undo"
-        android:layout_toRightOf="@+id/button_undo"
-        android:gravity="center"
-        android:text="→"
-        android:textSize="18sp" />
-
-    <Button
-        android:id="@+id/button_close"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="0dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginRight="0dp"
-        android:text="×"
-        android:textSize="24sp"
-        android:visibility="invisible"
-        app:backgroundTint="#FF2222" />
 
     <LinearLayout
         android:id="@+id/layout_reshape"
@@ -837,7 +824,7 @@
                 android:layout_marginRight="5dp"
                 android:layout_weight="1"
                 android:text="expand"
-                app:backgroundTint="#2196F3" />
+                app:backgroundTint="#49BEFF" />
 
             <Button
                 android:id="@+id/button_slide"

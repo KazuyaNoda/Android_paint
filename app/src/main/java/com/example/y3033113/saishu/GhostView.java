@@ -41,29 +41,29 @@ public class GhostView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        if(paint == null){
-            paint = new Paint();
-            width = MyView.width;
-            height = MyView.height;
-            bitmap_sub = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-            canvas_sub = new Canvas(bitmap_sub);
-        }
+        if(drawghostkey){
+            super.onDraw(canvas);
+            if(paint == null){
+                paint = new Paint();
+                width = MyView.width;
+                height = MyView.height;
+                bitmap_sub = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+                canvas_sub = new Canvas(bitmap_sub);
+            }
 
-        clear();
+            clear();
 
-        if(!MyView.path.isEmpty()){
-            paint.setColor(Color.GREEN);
-            paint.setStyle(Paint.Style.STROKE);
-            canvas_sub.drawPath(MyView.path, paint);
-        }
+            if(!MyView.path.isEmpty()){
+                paint.setColor(Color.GREEN);
+                paint.setStyle(Paint.Style.STROKE);
+                canvas_sub.drawPath(MyView.path, paint);
+            }
 
-        paint.setStrokeWidth(MainActivity2.thick);            // 線の太さを５に設定(将来的に変更できるようにする)
-        paint.setColor(MainActivity2.color);
-        if(MainActivity2.color == Color.TRANSPARENT){
-            paint.setColor(Color.WHITE);
-        }
-        if(drawghostkey) {                  // プレビュー図形を描画できるとき
+            paint.setStrokeWidth(MainActivity2.thick);
+            paint.setColor(MainActivity2.color);
+            if(MainActivity2.color == Color.TRANSPARENT){
+                paint.setColor(Color.WHITE);
+            }
             if(!com.example.y3033113.saishu.MyView.points.isEmpty()){
                 prex = MyView.points.get(0);
                 prey = MyView.points.get(1);

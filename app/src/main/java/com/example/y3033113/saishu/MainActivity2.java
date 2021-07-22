@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -22,12 +20,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 import static java.lang.String.format;
 
@@ -37,7 +31,7 @@ public class MainActivity2 extends AppCompatActivity {
     final byte mode_draw = 0;
     final byte mode_mode = 1;
     final byte mode_color = 2;
-    final byte mode_tool = 3;
+    final byte mode_reshape = 3;
     final byte mode_layer = 4;
     final byte mode_output = 5;
     final byte mode_expand = 6;
@@ -46,7 +40,6 @@ public class MainActivity2 extends AppCompatActivity {
 
     LinearLayout layout_mode;
     LinearLayout layout_color;
-    LinearLayout layout_tool;
     LinearLayout layout_layer;
     LinearLayout layout_output;
     LinearLayout layout_reshape;
@@ -58,7 +51,7 @@ public class MainActivity2 extends AppCompatActivity {
 
     Button button_mode;
     Button button_color;
-    Button button_tool;
+    Button button_reshape;
     Button button_layer;
     Button button_output;
 
@@ -74,6 +67,9 @@ public class MainActivity2 extends AppCompatActivity {
     Button button_clipreset;
     Button button_eraser;
 
+    Button button_roop_rect;
+    Button button_roop_round;
+
     Button button_red;
     Button button_green;
     Button button_blue;
@@ -84,7 +80,6 @@ public class MainActivity2 extends AppCompatActivity {
     Button button_white;
 
     Button button_ac;           // allclear機能を持たせるボタン
-    Button button_reshape;
 
     Button button_reshape_ok;
     Button button_reshape_no;
@@ -151,7 +146,6 @@ public class MainActivity2 extends AppCompatActivity {
         // LinerLayoutの設定
         layout_mode = (LinearLayout)findViewById(R.id.mode);
         layout_color = (LinearLayout)findViewById(R.id.color);
-        layout_tool = (LinearLayout)findViewById(R.id.tool);
         layout_layer = (LinearLayout)findViewById(R.id.layer);
         layout_output = (LinearLayout)findViewById(R.id.output);
         layout_reshape = (LinearLayout)findViewById(R.id.layout_reshape);
@@ -335,7 +329,7 @@ public class MainActivity2 extends AppCompatActivity {
 
         button_mode = (Button)findViewById(R.id.button_mode);
         button_color = (Button)findViewById(R.id.button_color);
-        button_tool = (Button)findViewById(R.id.button_tool);
+        button_reshape = (Button)findViewById(R.id.button_reshape);
         button_layer = (Button)findViewById(R.id.button_layer);
         button_output = (Button)findViewById(R.id.button_output);
 
@@ -351,6 +345,11 @@ public class MainActivity2 extends AppCompatActivity {
         button_clipreset = (Button)findViewById(R.id.button_clipreset);
         button_eraser = (Button)findViewById(R.id.button_eraser);
 
+        button_roop_rect = (Button)findViewById(R.id.button_roop_rect);
+        button_roop_round = (Button)findViewById(R.id.button_roop_round);
+
+        button_ac = (Button)findViewById(R.id.button_ac);
+
         button_red = (Button)findViewById(R.id.button_red);
         button_green = (Button)findViewById(R.id.button_green);
         button_blue = (Button)findViewById(R.id.button_blue);
@@ -359,9 +358,6 @@ public class MainActivity2 extends AppCompatActivity {
         button_yellow = (Button)findViewById(R.id.button_yellow);
         button_black = (Button)findViewById(R.id.button_black);
         button_white = (Button)findViewById(R.id.button_white);
-
-        button_ac = (Button)findViewById(R.id.button_ac);
-        button_reshape = (Button)findViewById(R.id.button_reshape);
 
         button_reshape_ok = (Button)findViewById(R.id.button_reshape_ok);
         button_reshape_no = (Button)findViewById(R.id.button_reshape_no);
@@ -504,6 +500,16 @@ public class MainActivity2 extends AppCompatActivity {
             }
         });
 
+        button_roop_rect.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+            }
+        });
+
+        button_roop_round.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+            }
+        });
+
         button_mode.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -548,24 +554,22 @@ public class MainActivity2 extends AppCompatActivity {
             }
         });
 
-        button_tool.setOnClickListener(new View.OnClickListener(){
+        button_reshape.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 if(viewmode == mode_draw){
-                    viewmode = mode_tool;
+                    viewmode = mode_reshape;
                     MyView.drawing = false;
-                    layout_tool.setVisibility(View.VISIBLE);
-                    button_close.setVisibility(View.VISIBLE);
+                    layout_reshape.setVisibility(View.VISIBLE);
                 }
-                else if(viewmode == mode_tool){
+                else if(viewmode == mode_reshape){
                     close_button();
                 }
                 else{
                     close_button();
-                    viewmode = mode_tool;
+                    viewmode = mode_reshape;
                     MyView.drawing = false;
-                    layout_tool.setVisibility(View.VISIBLE);
-                    button_close.setVisibility(View.VISIBLE);
+                    layout_reshape.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -732,29 +736,13 @@ public class MainActivity2 extends AppCompatActivity {
             }
         });
 
-        button_reshape.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                viewmode = mode_expand;
-                Toast.makeText(MainActivity2.this, "expand selected", Toast.LENGTH_SHORT).show();
-                ReshapeView.expand();
-                layout_reshape.setVisibility(View.VISIBLE);
-                button_close.setVisibility(View.INVISIBLE);
-                layout_tool.setVisibility(View.INVISIBLE);
-            }
-        });
-
         button_reshape_ok.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                MyView.keptlist = MyView.layers.get(MyView.currentLayer);
-                MyView.layers.set(MyView.currentLayer, new ArrayList<>());
-                MyView.layers.get(MyView.currentLayer).add(new Structure(null, 0, MyView.mode_bitmap, 0, null, false, ReshapeView.bm_reshaped));
-
-                MyView.myDraw();
+                ReshapeView.decide();
                 ReshapeView.end();
-                viewmode = mode_draw;
-                layout_reshape.setVisibility(View.INVISIBLE);
+                MyView.myDraw();
+                close_button();
             }
         });
 
@@ -763,8 +751,7 @@ public class MainActivity2 extends AppCompatActivity {
             public void onClick(View v) {
                 ReshapeView.end();
                 MyView.myDraw();
-                viewmode = mode_draw;
-                layout_reshape.setVisibility(View.INVISIBLE);
+                close_button();
             }
         });
 
@@ -918,8 +905,8 @@ public class MainActivity2 extends AppCompatActivity {
                 button_color.setBackgroundColor(color);
                 button_color.setText("");
                 break;
-            case mode_tool:
-                layout_tool.setVisibility(View.INVISIBLE);
+            case mode_reshape:
+                layout_reshape.setVisibility(View.INVISIBLE);
                 break;
             case mode_layer:
                 layout_layer.setVisibility(View.INVISIBLE);
