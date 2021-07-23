@@ -502,11 +502,34 @@ public class MainActivity2 extends AppCompatActivity {
 
         button_roop_rect.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
+                if(!GhostView.roopRect){
+                    GhostView.rooping = true;
+                    GhostView.roopRect = true;
+                    GhostView.roopRound = false;
+                }
+                else{
+                    GhostView.stopRoop();
+                    GhostView.rooping = false;
+                    GhostView.roopRect = false;
+                }
+                close_button();
             }
         });
 
         button_roop_round.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
+                if(!GhostView.roopRound){
+                    GhostView.rooping = true;
+                    GhostView.roopRound = true;
+                    GhostView.roopRect = false;
+
+                }
+                else{
+                    GhostView.stopRoop();
+                    GhostView.rooping = false;
+                    GhostView.roopRound = false;
+                }
+                close_button();
             }
         });
 

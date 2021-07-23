@@ -139,6 +139,10 @@ public class MyView extends View {
                     cliping = true;
                     points = new ArrayList<>();
                 }
+                else if(GhostView.rooping){
+                    points = new ArrayList<>();
+                    GhostView.bitmap_roop = GhostView.bitmap_sub.copy(Bitmap.Config.ARGB_8888, true);
+                }
                 else{
                     color = MainActivity2.color;
                     thick = MainActivity2.thick;
@@ -150,6 +154,7 @@ public class MyView extends View {
                     if(cliping){
                         GhostView.drawghostkey = false;     // プレビュー図形の表示を終了
                     }
+                    GhostView.clear();
                     invalidate();                       // 再描画
                 }
 

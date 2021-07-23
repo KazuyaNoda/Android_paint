@@ -21,7 +21,10 @@ public class GhostView extends View {
     static Paint paint;
     static Canvas canvas_sub;
     static Bitmap bitmap_sub;
-    static boolean expanding = false;
+    static Bitmap bitmap_roop;
+    static boolean rooping = false;
+    static boolean roopRect = false;
+    static boolean roopRound = false;
 
     static float prex = 0;
     static float prey = 0;
@@ -41,17 +44,18 @@ public class GhostView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if(drawghostkey){
-            super.onDraw(canvas);
-            if(paint == null){
-                paint = new Paint();
-                width = MyView.width;
-                height = MyView.height;
-                bitmap_sub = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                canvas_sub = new Canvas(bitmap_sub);
-            }
+        super.onDraw(canvas);
+        if(paint == null){
+            paint = new Paint();
+            width = MyView.width;
+            height = MyView.height;
+            bitmap_sub = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            canvas_sub = new Canvas(bitmap_sub);
+        }
 
-            clear();
+        if(drawghostkey || rooping){
+            paint.setStrokeWidth(MainActivity2.thick);
+            paint.setColor(MainActivity2.color);
 
             if(!MyView.path.isEmpty()){
                 paint.setColor(Color.GREEN);
@@ -59,20 +63,70 @@ public class GhostView extends View {
                 canvas_sub.drawPath(MyView.path, paint);
             }
 
-            paint.setStrokeWidth(MainActivity2.thick);
-            paint.setColor(MainActivity2.color);
-            if(MainActivity2.color == Color.TRANSPARENT){
-                paint.setColor(Color.WHITE);
-            }
             if(!com.example.y3033113.saishu.MyView.points.isEmpty()){
                 prex = MyView.points.get(0);
                 prey = MyView.points.get(1);
             }
-            if(MyView.moving){
-                drawghost();
+
+            if(rooping){
+                if(MainActivity2.color == Color.TRANSPARENT){
+                    paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+                }
+
+                if(roopRect){
+                    paint.setStyle(Paint.Style.STROKE);
+                    paint.setColor(Color.BLUE);
+                    canvas.drawRect(0, 0, width/2, height/2, paint);
+                    paint.setColor(MainActivity2.color);
+                    for(int i=0; i<2; i++){
+                        for(int j=0; j<2; j++){
+                            canvas_sub.save();
+                            canvas_sub.translate(i*width/2, j*height/2);
+                            if(MyView.moving){
+                                drawghost();
+                            }
+                            canvas_sub.restore();
+                        }
+                    }
+                }
+                else if(roopRound){
+                    paint.setStyle(Paint.Style.STROKE);
+                    paint.setColor(Color.BLUE);
+                    canvas.drawLine(0, 0, width/2, height/2, paint);
+                    canvas.drawLine(width/2, height/2, width, 0, paint);
+                    paint.setColor(Color.RED);
+                    canvas.drawLine(width/2, height/2, width, height, paint);
+                    canvas.drawLine(width/2, height/2, width, height/2, paint);
+                    paint.setColor(MainActivity2.color);
+                    for(int i=0; i<6; i++){
+                        canvas_sub.save();
+                        canvas_sub.translate(width/2, height/2);
+                        canvas_sub.rotate(60*i);
+                        if(MyView.moving){
+                            drawghost();
+                        }
+                        canvas_sub.restore();
+                    }
+                }
                 canvas.drawBitmap(bitmap_sub, 0, 0, null);
             }
+            else if(drawghostkey){
+                clear();
+                paint.setColor(MainActivity2.color);
+                if(MainActivity2.color == Color.TRANSPARENT){
+                    paint.setColor(Color.WHITE);
+                }
+                if(MyView.moving){
+                    drawghost();
+                    canvas.drawBitmap(bitmap_sub, 0, 0, null);
+                }
+            }
+
+            if(MainActivity2.color == Color.TRANSPARENT){
+                paint.setXfermode(null);
+            }
         }
+        canvas.drawBitmap(bitmap_sub, 0, 0, null);
         invalidate();
     }
 
@@ -132,5 +186,13 @@ public class GhostView extends View {
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
         canvas_sub.drawRect(0, 0, width, height, paint);    // 画面を塗りつぶす
         paint.setXfermode(null);
+    }
+
+    static void stopRoop(){
+        MyView.keptlist = new ArrayList<>(64);
+        MyView.layers.get(MyView.currentLayer).add(new Structure(null, 0, MyView.mode_bitmap, 0, null, false, bitmap_roop));
+
+        canvas_sub.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+        MyView.myDraw();
     }
 }
