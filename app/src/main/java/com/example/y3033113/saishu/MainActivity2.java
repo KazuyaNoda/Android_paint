@@ -1,5 +1,5 @@
 package com.example.y3033113.saishu;
-
+// 描画ソフトのメイン部分を担当するアクティビティクラス
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -28,26 +28,27 @@ import static java.lang.String.format;
 
 // レイアウトなどを記述したメインクラス
 public class MainActivity2 extends AppCompatActivity {
-    final byte mode_draw = 0;
-    final byte mode_mode = 1;
-    final byte mode_color = 2;
-    final byte mode_reshape = 3;
-    final byte mode_layer = 4;
-    final byte mode_output = 5;
-    final byte mode_expand = 6;
+    final byte mode_draw = 0;       // 描くモード
+    final byte mode_mode = 1;       // 描画モードを選ぶモード
+    final byte mode_color = 2;      // 色を選ぶモード
+    final byte mode_reshape = 3;    // 変形するモード
+    final byte mode_layer = 4;      // レイヤ機能をつかうモード
+    final byte mode_output = 5;     // アウトプットするモード
 
-    byte viewmode = mode_draw;
+    byte viewmode = mode_draw;      // 何のモードかを格納する変数
 
+    // 各レイアウト
     LinearLayout layout_mode;
     LinearLayout layout_color;
     LinearLayout layout_layer;
     LinearLayout layout_output;
     LinearLayout layout_reshape;
-    LinearLayout layout_layerBitmap;
-    LinearLayout layout_layer2;
+    LinearLayout layout_layerBitmap;    // レイヤー画面での画像表示を担当
+    LinearLayout layout_layer2;         // レイヤー画面での二つ目の画像
 
-    Button button_redo;
-    Button button_undo;
+    // 各ボタン
+    Button button_redo;     // redo
+    Button button_undo;     // undo
 
     Button button_mode;
     Button button_color;
@@ -55,21 +56,22 @@ public class MainActivity2 extends AppCompatActivity {
     Button button_layer;
     Button button_output;
 
-    Button button_Line;         // 線を引くモードに変更させるボタン
-    Button button_Line2;
-    Button button_fillRect;     // 塗りつぶしあり四角形を描くモードに変更させるボタン
-    Button button_Rect;         // 塗りつぶしなし四角形を描くモードに変更させるボタン
-    Button button_fillOval;     // 塗りつぶしあり楕円を描くモードに変更させるボタン
-    Button button_Oval;         // 塗りつぶしなし楕円を描くモードに変更させるボタン
-    Button button_fillRound;
-    Button button_Round;
-    Button button_clip;
-    Button button_clipreset;
-    Button button_eraser;
+    Button button_Line;     // 線
+    Button button_Line2;    // 直線
+    Button button_fillRect; // 塗りつぶし四角形
+    Button button_Rect;     // 四角形
+    Button button_fillOval; // 塗りつぶし楕円
+    Button button_Oval;     // 楕円
+    Button button_fillRound;// 塗りつぶし真円
+    Button button_Round;    // 真円
+    Button button_clip;     // 領域指定
+    Button button_clipreset;// 領域解除
+    Button button_eraser;   // 消しゴム
 
-    Button button_roop_rect;
-    Button button_roop_round;
+    Button button_roop_rect;    // 四角形ループ
+    Button button_roop_round;   // 円形ループ
 
+    // 色を変更するボタン
     Button button_red;
     Button button_green;
     Button button_blue;
@@ -79,48 +81,51 @@ public class MainActivity2 extends AppCompatActivity {
     Button button_black;
     Button button_white;
 
-    Button button_ac;           // allclear機能を持たせるボタン
+    Button button_ac;           // 全消し
 
-    Button button_reshape_ok;
-    Button button_reshape_no;
-    Button button_expand;
-    Button button_slide;
+    // 変形
+    Button button_reshape_ok;       // 変形の「ok」
+    Button button_reshape_no;       // 変形の「no」
+    Button button_expand;           // 拡大縮小
+    Button button_slide;            // 平行移動
 
-    Button button_add_layer;
-    Button button_delete_layer;
-    Button button_exchange_layer;
-    Button button_layer_up;
+    // レイヤー
+    Button button_add_layer;        // レイヤー追加
+    Button button_delete_layer;     // レイヤー削除
+    Button button_exchange_layer;   // レイヤーの順番を入れ替え
+    Button button_layer_up;         // レイヤー画面で表示するレイヤーを変更
     Button button_layer_down;
-    Button button_visible_layer1;
+    Button button_visible_layer1;   // レイヤーの非表示切り替え
     Button button_visible_layer2;
-    Button button_preview;
+    Button button_preview;          // スライドショーへの切り替え
 
-    Button button_output_yes;
-    Button button_output_no;
-    Button button_output_cancel;
+    // アウトプット
+    Button button_output_yes;       // 保存して終了
+    Button button_output_no;        // 保存せず終了
+    Button button_output_cancel;    // やっぱりやめる
 
-    Button button_close;
+    Button button_close;        // あらゆる場面で使われるクローズボタンmode = mode_drawに切り替える
 
 
     TextView text_R;            // RGBのうちRの値を表示するTextView
     TextView text_G;            // RGBのうちGの値を表示するTextView
     TextView text_B;            // RGBのうちBの値を表示するTextView
     TextView text_alpha;        // 不透明度を表示するTextView
-    TextView text_seekBar_thick;
-    TextView text_currentLayer;
-    TextView text_layer1;
+    TextView text_seekBar_thick;    // 太さを表示する
+    TextView text_currentLayer;     // 現在のレイヤー番号を表示する
+    TextView text_layer1;           // 現在のレイヤー画面のレイヤー番号を表示する
     TextView text_layer2;
 
-    ImageView image_layer1;
+    ImageView image_layer1;     // レイヤー画面の現在のレイヤーイメージ
     ImageView image_layer2;
 
-    EditText et_delete_num;
-    EditText et_index_a;
+    EditText et_delete_num;     // 削除するレイヤーの番号
+    EditText et_index_a;        // 交換するレイヤーの番号
     EditText et_index_b;
 
-    boolean closing = false;
+    boolean closing = false;    // 正常に保存できたかどうかを表す
 
-    List<Bitmap> layerBitmap = new ArrayList<>(10);
+    List<Bitmap> layerBitmap = new ArrayList<>(10); // レイヤー画面に表示されるbitmapのリスト
 
 
     static SeekBar seekBar_R;       // RGBのうちRの値を入力するSeekBar
@@ -134,9 +139,9 @@ public class MainActivity2 extends AppCompatActivity {
     static int value_B = 0;         // RGBのうちBの値を格納する変数
     static int value_alpha = 255;   // 不透明度の値を格納する変数
 
-    int showingLayer = 0;
-    static int thick = 10;
-    static int color = Color.BLACK;
+    int showingLayer = 0;           // 現在表示しているレイヤー
+    static int thick = 10;          // 太さ
+    static int color = Color.BLACK; // 色
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -195,8 +200,8 @@ public class MainActivity2 extends AppCompatActivity {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         value_R = progress;                                                 // 各valueに各seekBarの値を格納
-                        String str = format("R: %d", progress);                       // TextViewに表示する文字列を編集
-                        text_R.setText(str);                                               // Textviewに表示
+                        String str = format("R: %d", progress);
+                        text_R.setText(str);
                     }
 
                     // ツマミがタッチされたとき
@@ -306,9 +311,10 @@ public class MainActivity2 extends AppCompatActivity {
         image_layer1 = (ImageView)findViewById(R.id.image_layer1);
         image_layer2 = (ImageView)findViewById(R.id.image_layer2);
 
+        // クリックリスナー
         image_layer1.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                int changenum = showingLayer;
+                int changenum = showingLayer;       // レイヤーを変更する
                 changeLayer(changenum);
                 close_button();
             }
@@ -316,7 +322,7 @@ public class MainActivity2 extends AppCompatActivity {
 
         image_layer2.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                int changenum = showingLayer + 1;
+                int changenum = showingLayer + 1;    // レイヤーを変更する
                 changeLayer(changenum);
                 close_button();
             }
@@ -383,7 +389,7 @@ public class MainActivity2 extends AppCompatActivity {
             // 押されたとき
             @Override
             public void onClick(View v) {
-                MyView.AllClear();  // 画面を白に塗りつぶす(MyView.javaのメソッド)
+                MyView.AllClear();  // 画面をクリア
                 close_button();
             }
         });
@@ -418,7 +424,7 @@ public class MainActivity2 extends AppCompatActivity {
         button_Line2.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                MyView.mode = MyView.mode_Line2;     // 線を引くモードにする
+                MyView.mode = MyView.mode_Line2;     // 直線を引くモードにする
                 button_mode.setText("-");
                 close_button();
             }
@@ -463,7 +469,7 @@ public class MainActivity2 extends AppCompatActivity {
         button_fillRound.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                MyView.mode = MyView.mode_fillRound;
+                MyView.mode = MyView.mode_fillRound;    // 塗りつぶし真円を描くモードにする
                 button_mode.setText("●sin");
                 close_button();
             }
@@ -472,7 +478,7 @@ public class MainActivity2 extends AppCompatActivity {
         button_Round.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                MyView.mode = MyView.mode_Round;
+                MyView.mode = MyView.mode_Round;        // 塗りつぶしなし真円を描くモードにする
                 button_mode.setText("◯sin");
                 close_button();
             }
@@ -480,7 +486,7 @@ public class MainActivity2 extends AppCompatActivity {
 
         button_clip.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                MyView.mode = MyView.mode_clip;
+                MyView.mode = MyView.mode_clip;     // 領域指定をするモードにする
                 button_mode.setText("c");
                 close_button();
             }
@@ -488,68 +494,68 @@ public class MainActivity2 extends AppCompatActivity {
 
         button_clipreset.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                MyView.clipReset();
+                MyView.clipReset();                 // 領域解除する
                 close_button();
             }
         });
 
         button_eraser.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                color = Color.TRANSPARENT;
-                button_color.setText("era");
+                color = Color.TRANSPARENT;          // 色を透明にする
+                button_color.setText("era");        // 消しゴム表示
             }
         });
 
         button_roop_rect.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                if(!GhostView.roopRect){
+                if(!GhostView.roopRect){            // ループボタンが押されていないとき
                     GhostView.rooping = true;
                     GhostView.roopRect = true;
                     GhostView.roopRound = false;
                 }
-                else{
-                    GhostView.stopRoop();
+                else{                               // ループボタンが押されているとき
+                    GhostView.stopRoop();           // ループモードを終了
                     GhostView.rooping = false;
                     GhostView.roopRect = false;
                 }
-                close_button();
+                close_button();                     // レイアウトを閉じる
             }
         });
 
         button_roop_round.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                if(!GhostView.roopRound){
+                if(!GhostView.roopRound){           // ループボタンが押されていないとき
                     GhostView.rooping = true;
                     GhostView.roopRound = true;
                     GhostView.roopRect = false;
 
                 }
-                else{
-                    GhostView.stopRoop();
+                else{                               // ループボタンが押されているとき
+                    GhostView.stopRoop();           // ループモードを終了
                     GhostView.rooping = false;
                     GhostView.roopRound = false;
                 }
-                close_button();
+                close_button();                     // レイアウトを閉じる
             }
         });
 
         button_mode.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                if(viewmode == mode_draw){
+                if(viewmode == mode_draw){                      // 描画モードのとき
                     viewmode = mode_mode;
                     MyView.drawing = false;
-                    layout_mode.setVisibility(View.VISIBLE);
+                    layout_mode.setVisibility(View.VISIBLE);    // レイアウトを表示
                     button_close.setVisibility(View.VISIBLE);
                 }
-                else if(viewmode == mode_mode){
-                    close_button();
+                else if(viewmode == mode_mode){                 // すでにボタンが押されているとき
+                    close_button();                             // レイアウトを閉じる
                 }
-                else{
-                    close_button();
+                else{                                           // そのほかのモードのとき
+                    close_button();                             // レイアウトを閉じる
                     viewmode = mode_mode;
                     MyView.drawing = false;
-                    layout_mode.setVisibility(View.VISIBLE);
+                    layout_mode.setVisibility(View.VISIBLE);    // レイアウトを表示
                     button_close.setVisibility(View.VISIBLE);
                 }
             }
@@ -558,20 +564,20 @@ public class MainActivity2 extends AppCompatActivity {
         button_color.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                if(viewmode == mode_draw){
+                if(viewmode == mode_draw){                      // 描画モードのとき
                     viewmode = mode_color;
                     MyView.drawing = false;
-                    layout_color.setVisibility(View.VISIBLE);
+                    layout_color.setVisibility(View.VISIBLE);   // レイアウトを表示
                     button_close.setVisibility(View.VISIBLE);
                 }
-                else if(viewmode == mode_color){
-                    close_button();
+                else if(viewmode == mode_color){                // すでにボタンが押されているとき
+                    close_button();                             // レイアウトを閉じる
                 }
-                else{
-                    close_button();
+                else{                                           // そのほかのモードのとき
+                    close_button();                             // レイアウトを閉じる
                     viewmode = mode_color;
                     MyView.drawing = false;
-                    layout_color.setVisibility(View.VISIBLE);
+                    layout_color.setVisibility(View.VISIBLE);   // レイアウトを表示
                     button_close.setVisibility(View.VISIBLE);
                 }
             }
@@ -580,19 +586,19 @@ public class MainActivity2 extends AppCompatActivity {
         button_reshape.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                if(viewmode == mode_draw){
+                if(viewmode == mode_draw){                      // 描画モードのとき
                     viewmode = mode_reshape;
                     MyView.drawing = false;
-                    layout_reshape.setVisibility(View.VISIBLE);
+                    layout_reshape.setVisibility(View.VISIBLE); // レイアウトを表示
                 }
-                else if(viewmode == mode_reshape){
-                    close_button();
+                else if(viewmode == mode_reshape){              // すでにボタンが押されているとき
+                    close_button();                             // レイアウトを閉じる
                 }
-                else{
-                    close_button();
+                else{                                           // そのほかのモードのとき
+                    close_button();                             // レイアウトを閉じる
                     viewmode = mode_reshape;
                     MyView.drawing = false;
-                    layout_reshape.setVisibility(View.VISIBLE);
+                    layout_reshape.setVisibility(View.VISIBLE);  // レイアウトを表示
                 }
             }
         });
@@ -600,22 +606,22 @@ public class MainActivity2 extends AppCompatActivity {
         button_layer.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                if(viewmode == mode_draw){
+                if(viewmode == mode_draw){                      // 描画モードのとき
                     viewmode = mode_layer;
                     MyView.drawing = false;
-                    showBitmap();
-                    layout_layer.setVisibility(View.VISIBLE);
+                    showBitmap();                               // レイヤーのイメージを表示
+                    layout_layer.setVisibility(View.VISIBLE);   // レイアウトを表示
                     button_close.setVisibility(View.VISIBLE);
                 }
-                else if(viewmode == mode_layer){
-                    close_button();
+                else if(viewmode == mode_layer){                // すでにボタンが押されているとき
+                    close_button();                             // レイアウトを閉じる
                 }
-                else{
-                    close_button();
+                else{                                           // そのほかのモードのとき
+                    close_button();                             // レイアウトを閉じる
                     viewmode = mode_layer;
                     MyView.drawing = false;
-                    showBitmap();
-                    layout_layer.setVisibility(View.VISIBLE);
+                    showBitmap();                               // レイヤーのイメージを表示
+                    layout_layer.setVisibility(View.VISIBLE);   // レイアウトを表示
                     button_close.setVisibility(View.VISIBLE);
                 }
             }
@@ -624,20 +630,20 @@ public class MainActivity2 extends AppCompatActivity {
         button_output.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                if(viewmode == mode_draw){
+                if(viewmode == mode_draw){                      // 描画モードのとき
                     viewmode = mode_output;
                     MyView.drawing = false;
-                    layout_output.setVisibility(View.VISIBLE);
+                    layout_output.setVisibility(View.VISIBLE);  // レイアウトを表示
                     button_close.setVisibility(View.VISIBLE);
                 }
-                else if(viewmode == mode_output){
-                    close_button();
+                else if(viewmode == mode_output){               // すでにボタンが押されているとき
+                    close_button();                             // レイアウトを閉じる
                 }
-                else{
-                    close_button();
+                else{                                           // そのほかのモードのとき
+                    close_button();                             // レイアウトを閉じる
                     viewmode = mode_output;
                     MyView.drawing = false;
-                    layout_output.setVisibility(View.VISIBLE);
+                    layout_output.setVisibility(View.VISIBLE);  // レイアウトを表示
                     button_close.setVisibility(View.VISIBLE);
                 }
             }
@@ -646,13 +652,14 @@ public class MainActivity2 extends AppCompatActivity {
         button_add_layer.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                // レイヤー情報を初期化し、生成したビットマップを格納する
                 MyView.layers.add(MyView.currentLayer + 1, new ArrayList<>(64));
                 MyView.bitmap.add(MyView.currentLayer + 1, Bitmap.createBitmap(MyView.width, MyView.height, Bitmap.Config.ARGB_8888));
                 MyView.canvas_bm.add(MyView.currentLayer + 1, new Canvas(MyView.bitmap.get(MyView.currentLayer + 1)));
                 text_currentLayer.setText(String.format("current: %d/%d", MyView.currentLayer+1, MyView.layers.size()));
 
-                showBitmap();
-                renewBitmap(0);
+                showBitmap();                  // レイヤーのイメージを表示
+                renewBitmap(0);     // レイヤーの表示番号を変更
 
                 Toast.makeText(MainActivity2.this, "add new layer", Toast.LENGTH_SHORT).show();
             }
@@ -661,27 +668,27 @@ public class MainActivity2 extends AppCompatActivity {
         button_exchange_layer.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                if(et_index_a.getText() != null && et_index_b.getText() != null){
-                    String s_number;
-                    int index_a;
-                    int index_b;
+                if(et_index_a.getText() != null && et_index_b.getText() != null){   // テキストが存在するとき
+                    String s_number;                                // テキストに書かれた数字(String)
+                    int index_a;                                    // 交換元のインデックス
+                    int index_b;                                    // 交換先のインデックス
 
-                    s_number = et_index_a.getText().toString();
+                    s_number = et_index_a.getText().toString();     // テキストの文字を取得し、Stringに変換
                     index_a = Integer.valueOf(s_number) - 1;
 
-                    s_number = et_index_b.getText().toString();
+                    s_number = et_index_b.getText().toString();     // テキストの文字を取得し、Stringに変換
                     index_b = Integer.valueOf(s_number) - 1;
 
-                    if(MyView.layers.size() > index_a){
+                    if(MyView.layers.size() > index_a){                 // レイヤーサイズを超えていなければ
                         if(MyView.layers.size() > index_b){
-                            MyView.exchangeLayers(index_a, index_b);
+                            MyView.exchangeLayers(index_a, index_b);    // レイヤー情報を交換
                             Toast.makeText(MainActivity2.this, "success", Toast.LENGTH_SHORT).show();
                         }
-                        else{
+                        else{                                           // index_bがレイヤーサイズを超えているとき
                             Toast.makeText(MainActivity2.this, "too large", Toast.LENGTH_SHORT).show();
                         }
                     }
-                    else{
+                    else{                                               // index_aがレイヤーサイズを超えているとき
                         Toast.makeText(MainActivity2.this, "too large", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -691,14 +698,14 @@ public class MainActivity2 extends AppCompatActivity {
         button_delete_layer.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                String s_delete_num = et_delete_num.getText().toString();
+                String s_delete_num = et_delete_num.getText().toString();       // テキストを取得し、Stringに変換
                 int delete_num = Integer.valueOf(s_delete_num) - 1;
-                if(layerBitmap.size() > delete_num && layerBitmap.size() != 1){
-                    deleteLayer(delete_num);
-                    showBitmap();
-                    MyView.myDraw();
+                if(layerBitmap.size() > delete_num && layerBitmap.size() != 1){ // delete_numがレイヤーサイズを超えておらず、レイヤーサイズが２以上のとき
+                    deleteLayer(delete_num);                                    // レイヤーの削除
+                    showBitmap();                                               // レイヤーイメージを表示
+                    MyView.myDraw();                                            // キャンバスの更新
                 }
-                else{
+                else{                                                           // delete_numがレイヤーサイズを超えているとき
                     Toast.makeText(MainActivity2.this, "too large", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -707,9 +714,9 @@ public class MainActivity2 extends AppCompatActivity {
         button_layer_up.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                if(layerBitmap.size() > showingLayer + 2){
-                    renewBitmap(1);
-                    showBitmap();
+                if(layerBitmap.size() > showingLayer + 2){  // レイヤーサイズを超えないならば
+                    renewBitmap(1);              // レイヤーの表示番号を更新
+                    showBitmap();                           // レイヤーイメージを表示
                 }
             }
         });
@@ -717,9 +724,9 @@ public class MainActivity2 extends AppCompatActivity {
         button_layer_down.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                if(showingLayer > 0){
-                    renewBitmap(-1);
-                    showBitmap();
+                if(showingLayer > 0){               // レイヤー番号が０未満にならないならば
+                    renewBitmap(-1);     // レイヤーの表示番号を更新
+                    showBitmap();                   // レイヤーイメージの表示
                 }
             }
         });
@@ -727,32 +734,33 @@ public class MainActivity2 extends AppCompatActivity {
         button_visible_layer1.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                if(MyView.invisible.contains(String.format("%d",showingLayer))){
-                    MyView.invisible.remove(String.format("%d",showingLayer));
+                if(MyView.invisible.contains(String.format("%d",showingLayer))){        // すでに非表示リストに入っているならば
+                MyView.invisible.remove(String.format("%d",showingLayer));              // 非表示リストから除外
                 }
-                else{
-                    MyView.invisible.add(0, String.format("%d",showingLayer));
+                else{                                                                   // 非表示リストに入っていないならば
+                    MyView.invisible.add(0, String.format("%d",showingLayer));    // 非表示リストに追加
                 }
-                showBitmap();
+                showBitmap();                                                           // レイヤーイメージの表示
             }
         });
 
         button_visible_layer2.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                if(MyView.invisible.contains(String.format("%d",showingLayer + 1))){
-                    MyView.invisible.remove(String.format("%d",showingLayer + 1));
+                if(MyView.invisible.contains(String.format("%d",showingLayer + 1))){        // すでに非表示リストに入っているならば
+                    MyView.invisible.remove(String.format("%d",showingLayer + 1));          // 非表示リストから除外
                 }
-                else{
-                    MyView.invisible.add(0, String.format("%d",showingLayer + 1));
+                else{                                                                       // 非表示リストに入っていないならば
+                    MyView.invisible.add(0, String.format("%d",showingLayer + 1));    // 非表示リストに追加
                 }
-                showBitmap();
+                showBitmap();                                                               // レイヤーイメージの表示
             }
         });
 
         button_preview.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                // Activity3を起動 スライドショーのようなもの
                 Intent intent = new Intent(MainActivity2.this, MainActivity3.class);
                 Toast.makeText(MainActivity2.this, "click!", Toast.LENGTH_SHORT).show();
                 startActivity(intent);
@@ -762,19 +770,19 @@ public class MainActivity2 extends AppCompatActivity {
         button_reshape_ok.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                ReshapeView.decide();
-                ReshapeView.end();
-                MyView.myDraw();
-                close_button();
+                ReshapeView.decide();   // bitmapを生成
+                ReshapeView.end();      // 変形を終了
+                MyView.myDraw();        // canvasの更新
+                close_button();         // レイアウトを閉じる
             }
         });
 
         button_reshape_no.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                ReshapeView.end();
-                MyView.myDraw();
-                close_button();
+                ReshapeView.end();      // 変形を終了
+                MyView.myDraw();        // canvasの更新
+                close_button();         // レイアウトを閉じる
             }
         });
 
@@ -784,7 +792,7 @@ public class MainActivity2 extends AppCompatActivity {
                 button_expand.setBackgroundColor(Color.rgb(33, 150, 243));
                 button_slide.setBackgroundColor(Color.rgb(73, 190, 255));
                 Toast.makeText(MainActivity2.this, "expand selected", Toast.LENGTH_SHORT).show();
-                ReshapeView.expand();
+                ReshapeView.expand();   // 拡大縮小機能
             }
         });
 
@@ -794,7 +802,7 @@ public class MainActivity2 extends AppCompatActivity {
                 button_slide.setBackgroundColor(Color.rgb(33, 150, 243));
                 button_expand.setBackgroundColor(Color.rgb(73, 190, 255));
                 Toast.makeText(MainActivity2.this, "slide selected", Toast.LENGTH_SHORT).show();
-                ReshapeView.slide();
+                ReshapeView.slide();    // 平行移動機能
             }
         });
 
@@ -802,13 +810,13 @@ public class MainActivity2 extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 closing = true;
-                save();
+                save();         // 保存 (を試みる)
 
-                if(closing){
-                    quit();
+                if(closing){    // 正常に保存できるならば
+                    quit();     // 終了
                     closing = false;
                 }
-                else{
+                else{           // 正常に保存できないならば
                     Toast.makeText(MainActivity2.this, "error", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -817,21 +825,21 @@ public class MainActivity2 extends AppCompatActivity {
         button_output_no.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                quit();
+                quit(); // Activityの終了
             }
         });
 
         button_output_cancel.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                close_button();
+                close_button(); // レイアウトを閉じる
             }
         });
 
         button_close.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                close_button();
+                close_button(); // レイアウトを閉じる
             }
         });
 
@@ -900,24 +908,28 @@ public class MainActivity2 extends AppCompatActivity {
         });
     }
 
+    // 色を指定するメソッド
     void setColor(int r, int g, int b){
+        // シークバーの位置更新
         seekBar_R.setProgress(r);
         seekBar_G.setProgress(g);
         seekBar_B.setProgress(b);
+        // RGBの値の表示
         String str_R = format("R: %d", r);
-        String str_G = format("R: %d", g);
-        String str_B = format("R: %d", b);
+        String str_G = format("G: %d", g);
+        String str_B = format("B: %d", b);
         text_R.setText(str_R);
         text_G.setText(str_G);
         text_B.setText(str_B);
-        layout_color.setVisibility(View.INVISIBLE);
+        layout_color.setVisibility(View.INVISIBLE); // レイアウトを閉じる
         button_close.setVisibility(View.INVISIBLE);
-        button_color.setBackgroundColor(color);
+        button_color.setBackgroundColor(color);     // ボタンの色を指定した色に変更する
         button_color.setText("");
         viewmode = mode_draw;
         MyView.drawing = true;
     }
 
+    // 現在開いているレイアウトを閉じるメソッド
     void close_button(){
         switch(viewmode){
             case mode_mode:
@@ -940,11 +952,12 @@ public class MainActivity2 extends AppCompatActivity {
         }
         viewmode = mode_draw;
         MyView.drawing = true;
-        if(button_close.getVisibility() == View.VISIBLE){
-            button_close.setVisibility(View.INVISIBLE);
+        if(button_close.getVisibility() == View.VISIBLE){   // クローズボタンが表示されているとき
+            button_close.setVisibility(View.INVISIBLE);     // 閉じる
         }
     }
 
+    // 表示しているレイヤーを更新するメソッド
     void renewBitmap(int up_or_down){
         image_layer1.setImageBitmap(layerBitmap.get(showingLayer + up_or_down));
         image_layer2.setImageBitmap(layerBitmap.get(showingLayer + 1 + up_or_down));
@@ -954,96 +967,103 @@ public class MainActivity2 extends AppCompatActivity {
         showingLayer += up_or_down;
     }
 
+    // レイヤーイメージを表示するメソッド
     void showBitmap(){
         layerBitmap = new ArrayList<Bitmap>(MyView.bitmap);
 
         image_layer1.setImageBitmap(layerBitmap.get(showingLayer));
         text_layer1.setText(String.format("%d", showingLayer + 1));
 
-        if(layerBitmap.size() == showingLayer + 1){
+        if(layerBitmap.size() == showingLayer + 1){                         // レイヤーサイズを超えなければ
             layout_layer2.setVisibility(View.INVISIBLE);
         }
-        else{
+        else{                                                               // レイヤーサイズを超えていれば
             layout_layer2.setVisibility(View.VISIBLE);
             image_layer2.setImageBitmap(layerBitmap.get(showingLayer + 1));
             text_layer2.setText(String.format("%d", showingLayer + 2));
         }
 
-        if(layerBitmap.size() > showingLayer + 2){
+        if(layerBitmap.size() > showingLayer + 2){                          // レイヤーサイズが超えなければ
             button_layer_up.setBackgroundColor(Color.rgb(100, 0, 255));
         }
-        else{
+        else{                                                               // レイヤーサイズを超えていれば
             button_layer_up.setBackgroundColor(Color.rgb(150, 150, 150));
         }
-        if(showingLayer > 0){
+        if(showingLayer > 0){                                               // レイヤーサイズが１以上であれば
             button_layer_down.setBackgroundColor(Color.rgb(100, 0, 255));
         }
-        else{
+        else{                                                               // レイヤーサイズが１未満であれば
             button_layer_down.setBackgroundColor(Color.rgb(150, 150, 150));
         }
 
-        if(MyView.invisible.contains(String.format("%d", showingLayer))){
+        if(MyView.invisible.contains(String.format("%d", showingLayer))){   // 非表示リストに存在するなら
             button_visible_layer1.setBackgroundColor(Color.rgb(100, 100, 100));
         }
-        else{
+        else{                                                               // 非表示リストに存在しないのならば
             button_visible_layer1.setBackgroundColor(Color.rgb(100, 200, 100));
         }
-        if(MyView.invisible.contains(String.format("%d", showingLayer+1))){
+        if(MyView.invisible.contains(String.format("%d", showingLayer+1))){ // 非表示リストに存在するなら
             button_visible_layer2.setBackgroundColor(Color.rgb(100, 100, 100));
         }
-        else{
+        else{                                                               // 非表示リストに存在しないのならば
             button_visible_layer2.setBackgroundColor(Color.rgb(100, 200, 100));
         }
     }
 
+    // 現在選択しているレイヤーを変更するメソッド
     void changeLayer(int changenum){
         MyView.currentLayer = changenum;
         text_currentLayer.setText(String.format("current: %d/%d", MyView.currentLayer+1, MyView.layers.size()));
     }
 
+    // レイヤーを削除するメソッド
     void deleteLayer(int layernum){
-        if(layerBitmap.size()-1 - showingLayer+1 <= 2){
+        if(layerBitmap.size()-1 - showingLayer+1 <= 2){         // レイアウトに収まる範囲であるならば
 
-            if(showingLayer != 0){
+            if(showingLayer != 0){                              // レイヤー番号が0にならないならば
                 showingLayer -= 1;
             }
-            if(layerBitmap.size()-1 == MyView.currentLayer){
+            if(layerBitmap.size()-1 == MyView.currentLayer){    // 現在表示しているレイヤーならば
                 if(MyView.currentLayer != 0){
                     MyView.currentLayer -= 1;
                 }
             }
         }
 
+        // 削除
         MyView.layers.remove(layernum);
         MyView.canvas_bm.remove(layernum);
         MyView.bitmap.remove(layernum);
         text_currentLayer.setText(String.format("current: %d/%d", MyView.currentLayer+1, MyView.layers.size()));
     }
 
+    // レイヤー情報を保存(出力)するメソッド
     void save(){
         String workNum = Integer.toString(MainActivity.workNum);
-        String filePath = MainActivity.filePath;
-        String output = "";
-        output += Integer.toString(MyView.width) + "\n";
-        output += Integer.toString(MyView.height) + "\n";
-        output += Integer.toString(MyView.layers.size()) + "\n";
-        output += Integer.toString(MyView.invisible.size()) + "\n";
+        String filePath = MainActivity.filePath;                        // 出力先
+        String output = "";                                             // 出力する文章
+        output += Integer.toString(MyView.width) + "\n";                // canvasの横幅
+        output += Integer.toString(MyView.height) + "\n";               // canvasの縦幅
+        output += Integer.toString(MyView.layers.size()) + "\n";        // レイヤーのサイズ
+        output += Integer.toString(MyView.invisible.size()) + "\n";     // 非表示リストのサイズ
         for(int i=0; i<MyView.invisible.size(); i++) {
-            output += MyView.invisible.get(i) + "\n";
+            output += MyView.invisible.get(i) + "\n";                   // 非表示レイヤー番号を記述
         }
 
         try{
             File file = new File(getApplicationContext().getFilesDir(), filePath + ".txt");
             FileWriter writer = new FileWriter(file);
-            writer.write(output);
+            writer.write(output);                                       // 記述
             writer.flush();
             writer.close();
 
+            // canvasのイメージをpng出力
             file = new File(getApplicationContext().getFilesDir(), filePath + ".png");
             FileOutputStream outStream = new FileOutputStream(file);
             CopyCanvas.bitmap_copy.compress(Bitmap.CompressFormat.PNG, 100, outStream);
             outStream.close();
 
+            // レイヤーのイメージをpng出力
             for(int i=0; i<MyView.bitmap.size(); i++){
                 file = new File(getApplicationContext().getFilesDir(), filePath + "_" + Integer.toString(i+1) + ".png");
                 outStream = new FileOutputStream(file);
@@ -1053,10 +1073,11 @@ public class MainActivity2 extends AppCompatActivity {
 
         }catch(ExceptionInInitializerError | IOException e){
             e.printStackTrace();
-            closing = false;
+            closing = false;                                    // 出力できないのならば、そのことをboolean変数で表す
         }
     }
 
+    // Activityの終了
     void quit(){
         Intent intent = new Intent(MainActivity2.this, MainActivity.class);
         startActivity(intent);

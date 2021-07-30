@@ -1,5 +1,5 @@
 package com.example.y3033113.saishu;
-
+// 選択中の色のプレビューを表示するクラス
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 
-// 色のプレビューを表示するクラス
 public class ColorView extends View {
     public ColorView(Context context) {
         super(context);
